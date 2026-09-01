@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contactez AGRI-TOGO à Lomé : rejoignez la coopérative, proposez un partenariat ou posez vos questions sur nos produits agricoles.">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/DyLKf9x/image.png">
+    <title>Contact - AGRI-TOGO</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-contact">
+    <!-- En-tête avec navigation -->
+    <header class="en-tete">
+        <div class="logo"> <img src="https://i.ibb.co/DyLKf9x/image.png" alt="logo" width="80px" height="80px">AGRI-TOGO</div>
+        <button class="bouton-burger" id="bouton-burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="navigation-principale">
+            <span class="ligne-burger"></span>
+            <span class="ligne-burger"></span>
+            <span class="ligne-burger"></span>
+        </button>
+        <nav class="navigation" id="navigation-principale">
+            <ul>
+                <li><a href="index.html">ACCUEIL</a></li>
+                <li><a href="apropos.html">À PROPOS</a></li>
+                <li><a href="produit.html">NOS PRODUITS</a></li>
+                <li><a href="actualite.html">ACTUALITÉS</a></li>
+                <li><a href="contact.html">CONTACT</a></li>
+            </ul>
+        </nav>
+        <button class="bouton-theme" id="bouton-theme" type="button" aria-label="Activer le mode sombre">
+            <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+        </button>
+        
+    </header>
+
+    <main>
+        <!-- Section contact -->
+        <section class="section-contact">
+            <!-- Vidéo de fond du bandeau (en boucle, muette) -->
+            <video class="video-fond-contact" autoplay muted loop playsinline preload="metadata" poster="https://i.ibb.co/ynbLCwzg/image.png">
+                <source src="images/contact-hero-video.mp4" type="video/mp4">
+            </video>
+            <h1>Contactez-nous</h1>
+            <p>Que vous soyez agriculteur souhaitant rejoindre la coopérative, partenaire potentiel ou client, nous sommes à votre écoute pour échanger sur vos projets.</p>
+        </section>
+
+        <!-- Section informations et formulaire -->
+        <section class="section-contact-contenu reveal">
+            <!-- Informations -->
+            <div class="informations">
+                <h2>Informations Pratiques</h2>
+                <div class="information-item">
+                    <span class="material-symbols-outlined icone">location_on</span>
+                    <div>
+                        <h3>Siège Social</h3>
+                        <p>Quartier Administratif, BP 1234, Lomé, Togo</p>
+                    </div>
+                </div>
+                <div class="information-item">
+                    <span class="material-symbols-outlined icone">mail</span>
+                    <div>
+                        <h3>Email</h3>
+                        <p>contact@agri-togo.tg</p>
+                        <p>partenariats@agri-togo.tg</p>
+                    </div>
+                </div>
+                <div class="information-item">
+                    <span class="material-symbols-outlined icone">call</span>
+                    <div>
+                        <h3>Téléphone</h3>
+                        <p>+228 97 90 67 11</p>
+                        <p>+228 90 00 00 00</p>
+                    </div>
+                </div>
+                <div class="information-item">
+                    <span class="material-symbols-outlined icone">schedule</span>
+                    <div>
+                        <h3>Heures d'ouverture</h3>
+                        <p>Lundi - Vendredi : 08h00 - 17h00</p>
+                        <p>Samedi : 08h00 - 12h00</p>
+                    </div>
+                </div>
+                <div class="doc15">
+                    <iframe 
+                        src="https://maps.google.com/maps?q=Lom%C3%A9,Togo&t=&z=13&ie=UTF8&iwloc=&output=embed" 
+                        title="Carte de localisation Lomé">
+                    </iframe>
+                </div>
+            </div>
+
+            <!-- Formulaire -->
+            <div class="formulaire">
+                <h2>Envoyer un Message</h2>
+                <form action="#" method="POST">
+                    <div class="groupe-formulaire">
+                        <label for="nom">Nom Complet *</label>
+                        <input type="text" id="nom" name="nom" placeholder="Sam Vic Dev" required>
+                    </div>
+                    <div class="groupe-formulaire">
+                        <label for="email">Adresse Email *</label>
+                        <input type="email" id="email" name="email" placeholder="samvicdev@exemple.com" required>
+                    </div>
+                    <div class="groupe-formulaire">
+                        <label for="sujet">Sujet *</label>
+                        <select id="sujet" name="sujet" required>
+                            <option value="" disabled selected>Sélectionnez un sujet</option>
+                            <option value="information">Demande d'information</option>
+                            <option value="partenariat">Partenariat</option>
+                            <option value="cooperative">Rejoindre la coopérative</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="groupe-formulaire">
+                        <label for="message">Message *</label>
+                        <textarea id="message" name="message" placeholder="Comment pouvons-nous vous aider ?" required></textarea>
+                    </div>
+                    <button type="submit" class="bouton-envoyer">
+                        Envoyer le message
+                        <span class="material-symbols-outlined">send</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="pied-de-page">
+        <div class="grille-footer">
+            <div class="colonne-footer">
+                <h3><img src="https://i.ibb.co/DyLKf9x/image.png" alt="logo AGRI-TOGO" width="30" height="30">AGRI-TOGO</h3>
+                <p>Plateforme de développement agricole structurelle et durable.</p>
+            </div>
+            <div class="colonne-footer">
+                <h4>NAVIGATION</h4>
+                <a href="index.html">Accueil</a>
+                <a href="produit.html">Nos Produits</a>
+                <a href="actualite.html">Actualités</a>
+            </div>
+            <div class="colonne-footer">
+                <h4>LÉGAL</h4>
+                <a href="#">Mentions légales</a>
+                <a href="#">Confidentialité</a>
+            </div>
+            <div class="colonne-footer">
+                <h4>CONTACT</h4>
+                <p>Lomé, Togo</p>
+                <a href="mailto:info@agritogo.tg">info@agritogo.tg</a>
+            </div>
+        </div>
+        <p class="copyright">© 2023 AGRI-TOGO. Design by SAMVICdev .</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+
+</body>
+</html>

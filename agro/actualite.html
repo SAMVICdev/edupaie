@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Suivez l'actualité d'AGRI-TOGO : récoltes, formations, événements agricoles et documentaires sur l'écosystème agricole togolais.">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/DyLKf9x/image.png">
+    <title>Actualités - AGRI-TOGO</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-actualite">
+    <!-- En-tête avec navigation -->
+    <header class="en-tete">
+        <div class="logo"> <img src="https://i.ibb.co/DyLKf9x/image.png" alt="logo" width="80px" height="80px">AGRI-TOGO</div>
+        <button class="bouton-burger" id="bouton-burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="navigation-principale">
+            <span class="ligne-burger"></span>
+            <span class="ligne-burger"></span>
+            <span class="ligne-burger"></span>
+        </button>
+        <nav class="navigation" id="navigation-principale">
+            <ul>
+                <li><a href="index.html">ACCUEIL</a></li>
+                <li><a href="apropos.html">À PROPOS</a></li>
+                <li><a href="produit.html">NOS PRODUITS</a></li>
+                <li><a href="actualite.html">ACTUALITÉS</a></li>
+                <li><a href="contact.html">CONTACT</a></li>
+            </ul>
+        </nav>
+        <button class="bouton-theme" id="bouton-theme" type="button" aria-label="Activer le mode sombre">
+            <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+        </button>
+        <span class="material-symbols-outlined">person</span>
+    </header>
+
+    <main>
+        <!-- Section actualités -->
+        <section class="section-actualites">
+            <h1>Actualités</h1>
+            <p>Découvrez les dernières nouvelles de notre écosystème agricole et nos activités au Togo.</p>
+        </section>
+
+        <!-- Article à la une -->
+        <section class="article-une reveal">
+            <div class="carte-article-une">
+                <div class="contenu-article-une">
+                    <span class="etiquette">À LA UNE</span>
+                    <p class="date">12 Octobre 2024</p>
+                    <h2>Bilan Exceptionnel de la Grande Récolte de Maïs 2024</h2>
+                    <p>Grâce à l'introduction de nouvelles semences résilientes au climat et à l'effort collectif de nos 500 membres, la coopérative enregistre une hausse historique de 40% de sa production cette saison.</p>
+                    <a href="#">Lire le rapport complet →</a>
+                </div>
+                <!-- Image: champs de maïs -->
+            </div>
+        </section>
+
+        <!-- Grille d'actualités -->
+        <section class="grille-actualites reveal">
+            <div class="entete-actualites">
+                <h2>Dernières nouvelles</h2>
+                <div class="filtres-actualites">
+                    <button class="bouton-filtre actif">Tout</button>
+                    <button class="bouton-filtre">Formations</button>
+                    <button class="bouton-filtre">Événements</button>
+                </div>
+            </div>
+            <div class="grille-cartes">
+                <div class="carte-actualite">
+                    <!-- Image: irrigation -->
+                    <span class="etiquette">FORMATION</span>
+                    <p class="date">05 Octobre 2024</p>
+                    <h3>Déploiement des systèmes d'irrigation goutte-à-goutte</h3>
+                    <p>Dans la région des Savanes, 50 agriculteurs ont été formés à l'utilisation des nouvelles technologies d'irrigation.</p>
+                    <a href="#">Découvrir le programme →</a>
+                </div>
+                <div class="carte-actualite">
+                    <!-- Image: foire agricole -->
+                    <span class="etiquette">ÉVÉNEMENT</span>
+                    <p class="date">28 Septembre 2024</p>
+                    <h3>Retour sur la Foire Agricole de Lomé (FALO)</h3>
+                    <p>Notre stand a accueilli plus de 2000 visiteurs. Une occasion unique de présenter la qualité de nos produits.</p>
+                    <a href="#">En savoir plus →</a>
+                </div>
+                <div class="carte-actualite">
+                    <!-- Image: soja -->
+                    <span class="etiquette">PRODUCTION</span>
+                    <p class="date">15 Septembre 2024</p>
+                    <h3>Nouvelle variété de soja certifiée</h3>
+                    <p>Distribution des nouvelles semences certifiées aux producteurs de la région des Plateaux.</p>
+                    <a href="#">Voir les détails →</a>
+                </div>
+                <div class="carte-actualite">
+                    <!-- Vidéo: documentaire -->
+                    <video class="video-carte" autoplay muted loop playsinline preload="metadata" poster="https://i.ibb.co/d0FpSsPg/image.png">
+                        <source src="images/documentaire-cooperative.mp4" type="video/mp4">
+                    </video>
+                    <span class="etiquette">COMMUNAUTÉ</span>
+                    <p class="date">02 Septembre 2024</p>
+                    <h3>Documentaire : La force de notre coopérative</h3>
+                    <p>Découvrez le quotidien de nos membres à travers notre nouveau documentaire.</p>
+                    <a href="#">Regarder →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter -->
+        <section class="section-newsletter reveal">
+            <h2>Ne manquez aucune actualité</h2>
+            <p>Inscrivez-vous à notre bulletin mensuel pour recevoir nos nouvelles directement dans votre boîte de réception.</p>
+            <form class="formulaire-newsletter">
+                <input type="email" placeholder="Votre adresse email" required>
+                <button type="submit">S'abonner</button>
+            </form>
+        </section>
+
+        <!-- Événements à venir -->
+        <section class="section-evenements reveal">
+            <h2>À Venir</h2>
+            <div class="carte-evenement">
+                <div class="date-evenement">
+                    <div class="jour">24</div>
+                    <div class="mois">NOV</div>
+                </div>
+                <div class="contenu-evenement">
+                    <h3>Assemblée Générale Annuelle</h3>
+                    <p><span class="material-symbols-outlined">location_on</span> Siège AGRI-TOGO, Lomé</p>
+                </div>
+                <a href="#" class="lien">→</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="pied-de-page">
+        <div class="grille-footer">
+            <div class="colonne-footer">
+                <h3><img src="https://i.ibb.co/DyLKf9x/image.png" alt="logo AGRI-TOGO" width="30" height="30">AGRI-TOGO</h3>
+                <p>Plateforme de développement agricole structurelle et durable.</p>
+            </div>
+            <div class="colonne-footer">
+                <h4>NAVIGATION</h4>
+                <a href="index.html">Accueil</a>
+                <a href="produit.html">Nos Produits</a>
+                <a href="actualite.html">Actualités</a>
+            </div>
+            <div class="colonne-footer">
+                <h4>LÉGAL</h4>
+                <a href="#">Mentions légales</a>
+                <a href="#">Confidentialité</a>
+            </div>
+            <div class="colonne-footer">
+                <h4>CONTACT</h4>
+                <p>Lomé, Togo</p>
+                <a href="mailto:info@agritogo.tg">info@agritogo.tg</a>
+            </div>
+        </div>
+        <p class="copyright">© 2023 AGRI-TOGO. All rights reserved structural design.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Découvrez les produits agricoles d'AGRI-TOGO : maïs, manioc, ananas Victoria, gari premium et riz paddy, cultivés durablement au Togo.">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/DyLKf9x/image.png">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <title>Nos Produits - AGRI-TOGO</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-produit">
+    <!-- En-tête avec navigation -->
+    <header class="en-tete">
+        <div class="logo"><img src="https://i.ibb.co/DyLKf9x/image.png" alt="logo" width="80px" height="80px">AGRI-TOGO</div>
+        <button class="bouton-burger" id="bouton-burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="navigation-principale">
+            <span class="ligne-burger"></span>
+            <span class="ligne-burger"></span>
+            <span class="ligne-burger"></span>
+        </button>
+        <nav class="navigation" id="navigation-principale">
+            <ul>
+                <li><a href="index.html">ACCUEIL</a></li>
+                <li><a href="apropos.html">À PROPOS</a></li>
+                <li><a href="produit.html">NOS PRODUITS</a></li>
+                <li><a href="actualite.html">ACTUALITÉS</a></li>
+                <li><a href="contact.html">CONTACT</a></li>
+            </ul>
+        </nav>
+        <button class="bouton-theme" id="bouton-theme" type="button" aria-label="Activer le mode sombre">
+            <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+        </button>
+       
+    </header>
+
+    <main>
+        <!-- Section produits -->
+        <section class="section-produits reveal">
+            <p>QUALITÉ SUPÉRIEURE</p>
+            <h1>Nos Produits Agricoles</h1>
+            <p>Découvrez la richesse de nos terres, cultivée avec soin et respect de l'environnement par nos coopérateurs engagés pour une agriculture togolaise durable et performante.</p>
+        </section>
+
+        <!-- Galerie / carrousel produits -->
+        <section class="section-carrousel reveal" aria-label="Galerie de nos produits">
+            <div class="carrousel" id="carrousel-produits">
+                <div class="carrousel-piste" id="carrousel-piste">
+                    <figure class="diapositive" data-titre="Maïs Blanc">
+                        <img src="https://i.ibb.co/JFg1D0JM/image.png" alt="Maïs blanc, céréale phare d'AGRI-TOGO">
+                    </figure>
+                    <figure class="diapositive" data-titre="Manioc Doux">
+                        <img src="https://i.ibb.co/gLsxwSmp/image.png" alt="Manioc doux cultivé dans les sols sablonneux" loading="lazy">
+                    </figure>
+                    <figure class="diapositive" data-titre="Ananas Victoria">
+                        <img src="https://i.ibb.co/PvdH7VR7/image.png" alt="Ananas Victoria, fruit sucré et parfumé" loading="lazy">
+                    </figure>
+                    <figure class="diapositive" data-titre="Gari Premium">
+                        <img src="https://i.ibb.co/RpkP9f06/image.png" alt="Gari premium, farine de manioc torréfiée" loading="lazy">
+                    </figure>
+                    <figure class="diapositive" data-titre="Riz Paddy">
+                        <img src="https://i.ibb.co/QhMtqJj/image.png" alt="Riz paddy cultivé dans nos bas-fonds aménagés" loading="lazy">
+                    </figure>
+                </div>
+
+                <button class="carrousel-bouton carrousel-precedent" type="button" aria-label="Diapositive précédente">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <button class="carrousel-bouton carrousel-suivant" type="button" aria-label="Diapositive suivante">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+
+                <div class="carrousel-points" aria-label="Choisir une diapositive">
+                    <button class="carrousel-point actif" type="button" aria-label="Aller à la diapositive 1 : Maïs Blanc" aria-current="true"></button>
+                    <button class="carrousel-point" type="button" aria-label="Aller à la diapositive 2 : Manioc Doux" aria-current="false"></button>
+                    <button class="carrousel-point" type="button" aria-label="Aller à la diapositive 3 : Ananas Victoria" aria-current="false"></button>
+                    <button class="carrousel-point" type="button" aria-label="Aller à la diapositive 4 : Gari Premium" aria-current="false"></button>
+                    <button class="carrousel-point" type="button" aria-label="Aller à la diapositive 5 : Riz Paddy" aria-current="false"></button>
+                </div>
+
+                <p class="carrousel-legende" id="carrousel-legende" aria-live="polite">Maïs Blanc</p>
+            </div>
+        </section>
+
+        <!-- Filtres -->
+        <div class="filtres">
+            <button class="bouton-filtre actif" data-filtre="tous" aria-pressed="true">Tous nos produits</button>
+            <button class="bouton-filtre" data-filtre="cereales-tubercules" aria-pressed="false">Céréales & Tubercules</button>
+            <button class="bouton-filtre" data-filtre="fruits-legumes" aria-pressed="false">Fruits & Légumes</button>
+            <button class="bouton-filtre" data-filtre="transformes" aria-pressed="false">Produits Transformés</button>
+            <span class="compteur-produits" id="compteur-produits" role="status">5 produits</span>
+        </div>
+
+        <!-- Grille de produits -->
+        <section class="grille-produits reveal">
+            <div class="carte-produit" data-categorie="cereales-tubercules">
+                <!-- Image: maïs -->
+                <span class="etiquette">CÉRÉALE</span>
+                <h3>Maïs Blanc</h3>
+                <p>Variété locale résistante, cultivée sans pesticides chimiques. Idéal pour la consommation humaine et la transformation locale.</p>
+                <p class="disponibilite">Disponibilité: Élevée</p>
+            </div>
+            <div class="carte-produit" data-categorie="cereales-tubercules">
+                <!-- Image: manioc -->
+                <span class="etiquette">TUBERCULE</span>
+                <h3>Manioc Doux</h3>
+                <p>Racines riches en amidon, parfaites pour la préparation du gari ou du foufou. Cultivé dans des sols sablonneux.</p>
+                <p class="disponibilite">Disponibilité: Élevée</p>
+            </div>
+            <div class="carte-produit" data-categorie="fruits-legumes">
+                <!-- Image: ananas -->
+                <span class="etiquette">FRUIT</span>
+                <h3>Ananas Victoria</h3>
+                <p>Variété réputée pour sa chair exceptionnellement sucrée et parfumée, avec un cœur tendre.</p>
+                <p class="disponibilite">Disponibilité: Saisonnière</p>
+            </div>
+            <div class="carte-produit" data-categorie="transformes">
+                <!-- Image: gari -->
+                <span class="etiquette">TRANSFORMÉ</span>
+                <h3>Gari Premium</h3>
+                <p>Farine de manioc torréfiée, croustillante et légèrement acidulée. Produite artisanalement dans des conditions d'hygiène.</p>
+                <p class="disponibilite">Disponibilité: Élevée</p>
+            </div>
+            <div class="carte-produit" data-categorie="cereales-tubercules">
+                <!-- Image: riz -->
+                <span class="etiquette">CÉRÉALE</span>
+                <h3>Riz Paddy</h3>
+                <p>Riz non décortiqué cultivé dans nos bas-fonds aménagés. Variétés à haut rendement offrant une excellente qualité.</p>
+                <p class="disponibilite">Disponibilité: Saisonnière</p>
+            </div>
+        </section>
+
+        <!-- Message affiché quand aucun produit ne correspond au filtre -->
+        <p class="aucun-produit" id="aucun-produit" aria-live="polite">Aucun produit ne correspond à ce filtre.</p>
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="pied-de-page">
+        <div class="grille-footer">
+            <div class="colonne-footer">
+                <h3><img src="https://i.ibb.co/DyLKf9x/image.png" alt="logo AGRI-TOGO" width="30" height="30">AGRI-TOGO</h3>
+                <p>Plateforme de développement agricole structurelle et durable.</p>
+            </div>
+            <div class="colonne-footer">
+                <h4>NAVIGATION</h4>
+                <a href="index.html">Accueil</a>
+                <a href="produit.html">Nos Produits</a>
+                <a href="actualite.html">Actualités</a>
+            </div>
+            <div class="colonne-footer">
+                <h4>LÉGAL</h4>
+                <a href="#">Mentions légales</a>
+                <a href="#">Confidentialité</a>
+            </div>
+            <div class="colonne-footer">
+                <h4>CONTACT</h4>
+                <p>Lomé, Togo</p>
+                <a href="mailto:info@agritogo.tg">info@agritogo.tg</a>
+            </div>
+        </div>
+        <p class="copyright">© 2023 AGRI-TOGO. Design by SAMVICdev .</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+
+    <script>
+        (function () {
+            var boutons = document.querySelectorAll('.filtres .bouton-filtre');
+            var cartes = document.querySelectorAll('.grille-produits .carte-produit');
+            var compteur = document.getElementById('compteur-produits');
+            var aucunProduit = document.getElementById('aucun-produit');
+
+            function appliquerFiltre(filtre) {
+                // Garde-fou : un bouton sans data-filtre ne doit jamais masquer tout
+                if (!filtre) { filtre = 'tous'; }
+
+                var visibles = 0;
+                var i, carte, afficher;
+                for (i = 0; i < cartes.length; i++) {
+                    carte = cartes[i];
+                    afficher = filtre === 'tous' || carte.getAttribute('data-categorie') === filtre;
+                    if (afficher) {
+                        carte.classList.remove('masque');
+                        // Relance l'animation d'apparition à chaque changement de filtre
+                        carte.classList.remove('apparait');
+                        void carte.offsetWidth;
+                        carte.classList.add('apparait');
+                        visibles++;
+                    } else {
+                        carte.classList.add('masque');
+                    }
+                }
+
+                if (compteur) {
+                    compteur.textContent = visibles + (visibles > 1 ? ' produits' : ' produit');
+                }
+                if (aucunProduit) {
+                    if (visibles === 0) {
+                        aucunProduit.classList.add('visible');
+                    } else {
+                        aucunProduit.classList.remove('visible');
+                    }
+                }
+            }
+
+            var j, bouton;
+            for (j = 0; j < boutons.length; j++) {
+                bouton = boutons[j];
+                bouton.addEventListener('click', function () {
+                    var k, b;
+                    for (k = 0; k < boutons.length; k++) {
+                        b = boutons[k];
+                        b.classList.remove('actif');
+                        b.setAttribute('aria-pressed', 'false');
+                    }
+                    this.classList.add('actif');
+                    this.setAttribute('aria-pressed', 'true');
+                    appliquerFiltre(this.getAttribute('data-filtre'));
+                });
+            }
+
+            appliquerFiltre('tous');
+        })();
+    </script>
+
+</body>
+</html>
