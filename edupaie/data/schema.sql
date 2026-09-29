@@ -1,0 +1,22 @@
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS eleves (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom TEXT NOT NULL,
+    prenom TEXT NOT NULL,
+    classe TEXT NOT NULL,
+    annee_scolaire TEXT NOT NULL,
+    montant_total_due REAL NOT NULL CHECK(montant_total_due >= 0),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS paiements (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    numero_recu TEXT UNIQUE NOT NULL,
+    eleve_id INTEGER NOT NULL,
+    montant REAL NOT NULL CHECK(montant > 0),
+    date_paiement DATE NOT NULL,
+    mode_paiement TEXT NOT NULL CHECK(mode_paiement IN ('Espèces', 'Chèque', 'Virement', 'Mobile Money')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (eleve_id) REFERENCES eleves(id) ON DELETE CASCADE
+);
