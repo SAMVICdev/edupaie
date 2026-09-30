@@ -1,0 +1,54 @@
+from datetime import datetime
+from src.database.paiement_dao import PaiementDAO
+from src.services.eleve_service import EleveService
+
+class PaiementService:
+
+    @staticmethod
+    def generer_numero_recu():
+        """Génère un numéro de reçu automatique (ex: REC-2026-0001)."""
+        dernier_recu = PaiementDAO.obtenir_dernier_recu()
+        annee_courante = datetime.now().year
+
+        if not dernier_recu:
+            compteur = 1
+        else:
+            # Extrait le numéro à la fin du dernier reçu
+            try:
+                dernier_num = int(dernier_recu.split('-')[-1])
+                compteur = dernier_num + 1
+            except (ValueError, IndexError):
+                compteur = 1
+
+        return f"REC-{annee_courante}-{compteur:04d}"
+
+    @staticmethod
+    def enregistrer_paiement(eleve_id, montant, mode_paiement):
+        """Valide et enregistre un versement."""
+        if montant <= 0:
+            raise ValueError("Le montant du paiement doit être supérieur à 0.")
+
+        details = EleveService.obtenir_details_eleve(eleve_id)
+        if not details or not details['eleve']:
+            raise ValueError("L'élève spécifié n'existe pas.")
+
+        if montant > details['reste_a_payer']:
+            raise ValueError(f"Le montant ({montant}) dépasse le reste à payer ({details['reste_a_payer']}).")
+
+        numero_recu = PaiementService.generer_numero_recu()
+        date_paiement = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        paiement_id = PaiementDAO.ajouter_paiement(
+            eleve_id=eleve_id,
+            montant=montant,
+            date_paiement=date_paiement,
+            mode_paiement=mode_paiement,
+            numero_recu=numero_recu
+        )
+
+        return {
+            "paiement_id": paiement_id,
+            "numero_recu": numero_recu,
+            "montant": montant,
+            "nouveau_reste": details['reste_a_payer'] - montant
+        }
