@@ -1,0 +1,12 @@
+# Cache Python
+__pycache__/
+*.pyc
+
+# Base de données locale
+*.sqlite3
+
+# Dossier des reçus PDF générés
+recus/
+
+# Environnement virtuel
+venv/
