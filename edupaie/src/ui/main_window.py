@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
         for row_idx, eleve in enumerate(eleves):
             self.table.insertRow(row_idx)
             
-            details = EleveService.obtenir_details_eleve(eleve['id'])
+            details = EleveService.obtenir_eleve_par_id(eleve['id'])
             reste = details['reste_a_payer'] if details else eleve['montant_total_due']
             total_reste_global += reste
 
