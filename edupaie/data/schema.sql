@@ -28,9 +28,10 @@ CREATE TABLE IF NOT EXISTS parametres (
     telephone TEXT,
     email TEXT,
     chemin_logo TEXT,
-    chemin_signature TEXT
+    chemin_signature TEXT,
+    annee_scolaire TEXT NOT NULL DEFAULT '2025-2026'
 );
 
 -- Insertion de la configuration par défaut de l'établissement
-INSERT OR IGNORE INTO parametres (id, nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature)
-VALUES (1, 'Nom de l''Établissement', 'Adresse de l''école', '+228 00 00 00 00', 'contact@ecole.com', '', '');
+INSERT OR IGNORE INTO parametres (id, nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature, annee_scolaire)
+VALUES (1, 'Nom de l''Établissement', 'Adresse de l''école', '+228 00 00 00 00', 'contact@ecole.com', '', '', '2025-2026');

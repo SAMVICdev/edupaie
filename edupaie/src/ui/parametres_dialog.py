@@ -6,7 +6,7 @@ class ParametresDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Paramètres de l'Établissement")
-        self.resize(450, 300)
+        self.resize(450, 350)
 
         self.layout = QFormLayout(self)
 
@@ -16,6 +16,7 @@ class ParametresDialog(QDialog):
         self.input_adresse = QLineEdit(params.get("adresse", ""))
         self.input_telephone = QLineEdit(params.get("telephone", ""))
         self.input_email = QLineEdit(params.get("email", ""))
+        self.input_annee = QLineEdit(params.get("annee_scolaire", "2025-2026"))
         
         # Logo / Tampon
         self.input_logo = QLineEdit(params.get("chemin_logo", ""))
@@ -37,6 +38,7 @@ class ParametresDialog(QDialog):
         self.layout.addRow("Adresse :", self.input_adresse)
         self.layout.addRow("Téléphone :", self.input_telephone)
         self.layout.addRow("Email :", self.input_email)
+        self.layout.addRow("Année scolaire active :", self.input_annee)
         self.layout.addRow("Tampon / Logo :", logo_layout)
         self.layout.addRow("Signature :", sig_layout)
 
@@ -63,13 +65,15 @@ class ParametresDialog(QDialog):
             self.input_signature.setText(f)
 
     def enregistrer(self):
+        annee_scolaire = self.input_annee.text().strip() or "2025-2026"
         ParametresDAO.sauvegarder_parametres(
             self.input_nom.text().strip(),
             self.input_adresse.text().strip(),
             self.input_telephone.text().strip(),
             self.input_email.text().strip(),
             self.input_logo.text().strip(),
-            self.input_signature.text().strip()
+            self.input_signature.text().strip(),
+            annee_scolaire
         )
         QMessageBox.information(self, "Succès", "Paramètres enregistrés avec succès !")
         self.accept()

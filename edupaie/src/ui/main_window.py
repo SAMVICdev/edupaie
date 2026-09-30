@@ -1,12 +1,14 @@
 import sys
+from datetime import datetime
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QLabel, QPushButton, QTableWidget, 
                              QTableWidgetItem, QMessageBox, QHeaderView, QFrame,
-                             QLineEdit, QComboBox)
+                             QLineEdit, QComboBox, QFileDialog)
 from PySide6.QtCore import Qt
 from src.database.eleve_dao import EleveDAO
 from src.database.paiement_dao import PaiementDAO
 from src.services.eleve_service import EleveService
+from src.services.export_service import ExportService
 from src.ui.eleve_dialog import EleveDialog
 from src.ui.paiement_dialog import PaiementDialog
 from src.ui.parametres_dialog import ParametresDialog
@@ -34,10 +36,14 @@ class MainWindow(QMainWindow):
         self.btn_ajouter = QPushButton("+ Nouvel Élève")
         self.btn_ajouter.clicked.connect(self.ouvrir_dialog_ajout)
 
+        self.btn_exporter = QPushButton("📤 Exporter")
+        self.btn_exporter.clicked.connect(self.exporter_donnees)
+
         header_layout.addWidget(self.titre)
         header_layout.addStretch()
         header_layout.addWidget(self.btn_parametres)
         header_layout.addWidget(self.btn_ajouter)
+        header_layout.addWidget(self.btn_exporter)
         self.main_layout.addLayout(header_layout)
 
         # Filtres de recherche
@@ -166,11 +172,6 @@ class MainWindow(QMainWindow):
         dialog = ParametresDialog(self)
         dialog.exec()
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
     def creer_carte_stat(self, titre, valeur_initiale, couleur):
         frame = QFrame()
         frame.setStyleSheet(f"""
@@ -187,7 +188,7 @@ if __name__ == "__main__":
         lbl_valeur = QLabel(valeur_initiale)
         lbl_valeur.setObjectName("valeur")
         lbl_valeur.setStyleSheet(f"color: {couleur}; font-size: 16px; font-weight: bold;")
-        
+
         layout.addWidget(lbl_titre)
         layout.addWidget(lbl_valeur)
         return frame
@@ -197,67 +198,28 @@ if __name__ == "__main__":
         self.card_total_impayes.findChild(QLabel, "valeur").setText(f"{total_reste:,.0f} FCFA")
         self.card_total_eleves.findChild(QLabel, "valeur").setText(str(nbr_eleves))
 
-    def charger_eleves(self):
-        eleves = EleveDAO.obtenir_tous()
-        self.table.setRowCount(0)
-
-        total_encaisse_global = PaiementDAO.obtenir_total_encaisse()
-        total_reste_global = 0.0
-
-        for row_idx, eleve in enumerate(eleves):
-            self.table.insertRow(row_idx)
-            
-            details = EleveService.obtenir_eleve_par_id(eleve['id'])
-            reste = details['reste_a_payer'] if details else eleve['montant_total_due']
-            total_reste_global += reste
-
-            self.table.setItem(row_idx, 0, QTableWidgetItem(str(eleve['id'])))
-            self.table.setItem(row_idx, 1, QTableWidgetItem(eleve['nom']))
-            self.table.setItem(row_idx, 2, QTableWidgetItem(eleve['prenom']))
-            self.table.setItem(row_idx, 3, QTableWidgetItem(eleve['classe']))
-            self.table.setItem(row_idx, 4, QTableWidgetItem(f"{eleve['montant_total_due']:,.0f} FCFA"))
-            self.table.setItem(row_idx, 5, QTableWidgetItem(f"{reste:,.0f} FCFA"))
-
-            # Bouton Payer
-            btn_payer = QPushButton("Payer")
-            if reste <= 0:
-                btn_payer.setText("Soldé")
-                btn_payer.setEnabled(False)
-            else:
-                btn_payer.clicked.connect(lambda _, e=eleve, r=reste: self.ouvrir_dialog_paiement(e, r))
-            self.table.setCellWidget(row_idx, 6, btn_payer)
-
-            # Bouton Historique
-            btn_historique = QPushButton("📜 Voir")
-            btn_historique.clicked.connect(lambda _, e=eleve: self.ouvrir_dialog_historique(e))
-            self.table.setCellWidget(row_idx, 7, btn_historique)
-
-        self.mettre_a_jour_stats(total_encaisse_global, total_reste_global, len(eleves))
-
-    def ouvrir_dialog_ajout(self):
-        dialog = EleveDialog(self)
-        if dialog.exec():
-            self.charger_eleves()
-
-    def ouvrir_dialog_paiement(self, eleve, reste):
-        dialog = PaiementDialog(
-            eleve_id=eleve['id'],
-            nom_eleve=eleve['nom'],
-            prenom_eleve=eleve['prenom'],
-            classe=eleve['classe'],
-            reste_a_payer=reste,
-            parent=self
+    def exporter_donnees(self):
+        filtre = "CSV (*.csv);;Excel (*.xlsx)"
+        chemin, _ = QFileDialog.getSaveFileName(
+            self,
+            "Exporter la liste des élèves",
+            f"eleves_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+            filtre,
         )
-        if dialog.exec():
-            self.charger_eleves()
+        if not chemin:
+            return
 
-    def ouvrir_dialog_historique(self, eleve):
-        dialog = HistoriqueDialog(eleve, self)
-        dialog.exec()
+        try:
+            fichier = ExportService.exporter_eleves(EleveService.obtenir_tous_les_eleves(), chemin)
+            QMessageBox.information(self, "Export réussi", f"Le fichier a été exporté sous :\n{fichier}")
+        except Exception as exc:
+            QMessageBox.critical(self, "Erreur d'export", f"Impossible d'exporter les données : {exc}")
 
-    def ouvrir_dialog_parametres(self):
-        dialog = ParametresDialog(self)
-        dialog.exec()
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

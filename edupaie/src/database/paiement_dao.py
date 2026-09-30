@@ -19,6 +19,11 @@ class PaiementDAO:
         return paiement_id
 
     @staticmethod
+    def ajouter_paiement(numero_recu, eleve_id, montant, date_paiement, mode_paiement):
+        """Alias permettant d'utiliser la méthode attendue par le service."""
+        return PaiementDAO.ajouter(numero_recu, eleve_id, montant, date_paiement, mode_paiement)
+
+    @staticmethod
     def obtenir_par_eleve(eleve_id):
         """Récupère tous les paiements effectués par un élève donné."""
         conn = get_connection()
@@ -46,6 +51,21 @@ class PaiementDAO:
         return row["numero_recu"] if row else None
 
     @staticmethod
+    def obtenir_dernier_recu():
+        """Alias compatible avec le service de paiement."""
+        return PaiementDAO.obtenir_dernier_numero_recu()
+
+    @staticmethod
+    def obtenir_total_paye_par_eleve(eleve_id):
+        """Calcule le montant payé par un élève."""
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT COALESCE(SUM(montant), 0) FROM paiements WHERE eleve_id = ?", (eleve_id,))
+        row = cursor.fetchone()
+        conn.close()
+        return float(row[0]) if row and row[0] is not None else 0.0
+
+    @staticmethod
     def obtenir_total_encaisse():
         """Calcule la somme totale de tous les règlements enregistrés."""
         conn = get_connection()
@@ -53,4 +73,4 @@ class PaiementDAO:
         cursor.execute("SELECT SUM(montant) FROM paiements")
         row = cursor.fetchone()
         conn.close()
-        return row[0] if row[0] else 0.0
+        return float(row[0]) if row and row[0] is not None else 0.0

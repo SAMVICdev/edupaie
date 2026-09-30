@@ -13,6 +13,18 @@ def get_connection():
 
 def init_db():
     """Initialise la base de données en exécutant le fichier schema.sql."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='parametres'")
+    table_exists = cursor.fetchone() is not None
+    if table_exists:
+        cursor.execute("PRAGMA table_info(parametres)")
+        columns = [row[1] for row in cursor.fetchall()]
+        if 'annee_scolaire' not in columns:
+            cursor.execute("ALTER TABLE parametres ADD COLUMN annee_scolaire TEXT NOT NULL DEFAULT '2025-2026'")
+            conn.commit()
+    conn.close()
+
     if os.path.exists(SCHEMA_PATH):
         with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
             schema_sql = f.read()

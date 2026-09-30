@@ -13,7 +13,6 @@ class PaiementService:
         if not dernier_recu:
             compteur = 1
         else:
-            # Extrait le numéro à la fin du dernier reçu
             try:
                 dernier_num = int(dernier_recu.split('-')[-1])
                 compteur = dernier_num + 1
@@ -29,7 +28,7 @@ class PaiementService:
             raise ValueError("Le montant du paiement doit être supérieur à 0.")
 
         details = EleveService.obtenir_details_eleve(eleve_id)
-        if not details or not details['eleve']:
+        if not details:
             raise ValueError("L'élève spécifié n'existe pas.")
 
         if montant > details['reste_a_payer']:
@@ -50,5 +49,7 @@ class PaiementService:
             "paiement_id": paiement_id,
             "numero_recu": numero_recu,
             "montant": montant,
-            "nouveau_reste": details['reste_a_payer'] - montant
+            "nouveau_reste": details['reste_a_payer'] - montant,
+            "date_paiement": date_paiement,
+            "mode_paiement": mode_paiement
         }

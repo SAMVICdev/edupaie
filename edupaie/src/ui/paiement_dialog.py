@@ -46,10 +46,12 @@ class PaiementDialog(QDialog):
             res = PaiementService.enregistrer_paiement(self.eleve_id, montant, mode_paiement)
             res['mode_paiement'] = mode_paiement
 
-            # Génération automatique du PDF
-            chemin_pdf = PDFService.generer_recu(
-                res, self.nom_eleve, self.prenom_eleve, self.classe
-            )
+            eleve_data = {
+                'nom': self.nom_eleve,
+                'prenom': self.prenom_eleve,
+                'classe': self.classe,
+            }
+            chemin_pdf = PDFService.generer_recu(res, eleve_data)
 
             QMessageBox.information(
                 self, 
