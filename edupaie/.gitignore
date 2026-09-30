@@ -10,3 +10,5 @@ recus/
 
 # Environnement virtuel
 venv/
+data/*.db
+*.db
