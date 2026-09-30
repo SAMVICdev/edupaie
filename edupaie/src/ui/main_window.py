@@ -1,7 +1,8 @@
 import sys
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QLabel, QPushButton, QTableWidget, 
-                             QTableWidgetItem, QMessageBox, QHeaderView, QFrame)
+                             QTableWidgetItem, QMessageBox, QHeaderView, QFrame,
+                             QLineEdit, QComboBox)
 from PySide6.QtCore import Qt
 from src.database.eleve_dao import EleveDAO
 from src.database.paiement_dao import PaiementDAO
@@ -39,6 +40,28 @@ class MainWindow(QMainWindow):
         header_layout.addWidget(self.btn_ajouter)
         self.main_layout.addLayout(header_layout)
 
+        # Filtres de recherche
+        self.filter_layout = QHBoxLayout()
+        self.search_input = QLineEdit()
+        self.search_input.setPlaceholderText("Rechercher par nom ou prénom...")
+        self.search_input.textChanged.connect(self.appliquer_filtres)
+
+        self.combo_classe = QComboBox()
+        self.combo_classe.addItem("Toutes les classes")
+        self.combo_classe.currentIndexChanged.connect(self.appliquer_filtres)
+
+        self.combo_statut = QComboBox()
+        self.combo_statut.addItems(["Tous", "Soldé", "Non soldé"])
+        self.combo_statut.currentIndexChanged.connect(self.appliquer_filtres)
+
+        self.filter_layout.addWidget(QLabel("Recherche :"))
+        self.filter_layout.addWidget(self.search_input, 2)
+        self.filter_layout.addWidget(QLabel("Classe :"))
+        self.filter_layout.addWidget(self.combo_classe, 1)
+        self.filter_layout.addWidget(QLabel("Statut :"))
+        self.filter_layout.addWidget(self.combo_statut, 1)
+        self.main_layout.addLayout(self.filter_layout)
+
         # Widgets de Statistiques
         self.stats_layout = QHBoxLayout()
         self.card_total_encaisse = self.creer_carte_stat("Total Encaissé", "0 FCFA", "#2e7d32")
@@ -59,8 +82,95 @@ class MainWindow(QMainWindow):
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.main_layout.addWidget(self.table)
 
+        self.remplir_filtre_classes()
         self.charger_eleves()
 
+    def remplir_filtre_classes(self):
+        classes = sorted({eleve.get('classe', '') for eleve in EleveDAO.obtenir_tous() if eleve.get('classe')})
+        self.combo_classe.blockSignals(True)
+        self.combo_classe.clear()
+        self.combo_classe.addItem("Toutes les classes")
+        for classe in classes:
+            self.combo_classe.addItem(classe)
+        self.combo_classe.blockSignals(False)
+
+    def appliquer_filtres(self):
+        self.charger_eleves()
+
+    def charger_eleves(self):
+        recherche = self.search_input.text()
+        classe_selectionnee = self.combo_classe.currentText()
+        statut_selectionne = self.combo_statut.currentText()
+
+        if classe_selectionnee == "Toutes les classes":
+            classe_selectionnee = ""
+
+        eleves = EleveService.filtrer_eleves(recherche, classe_selectionnee, statut_selectionne)
+        self.table.setRowCount(0)
+
+        total_encaisse_global = PaiementDAO.obtenir_total_encaisse()
+        total_reste_global = 0.0
+
+        for row_idx, eleve in enumerate(eleves):
+            self.table.insertRow(row_idx)
+            
+            details = EleveService.obtenir_eleve_par_id(eleve['id'])
+            reste = details['reste_a_payer'] if details else eleve['montant_total_due']
+            total_reste_global += reste
+
+            self.table.setItem(row_idx, 0, QTableWidgetItem(str(eleve['id'])))
+            self.table.setItem(row_idx, 1, QTableWidgetItem(eleve['nom']))
+            self.table.setItem(row_idx, 2, QTableWidgetItem(eleve['prenom']))
+            self.table.setItem(row_idx, 3, QTableWidgetItem(eleve['classe']))
+            self.table.setItem(row_idx, 4, QTableWidgetItem(f"{eleve['montant_total_due']:,.0f} FCFA"))
+            self.table.setItem(row_idx, 5, QTableWidgetItem(f"{reste:,.0f} FCFA"))
+
+            btn_payer = QPushButton("Payer")
+            if reste <= 0:
+                btn_payer.setText("Soldé")
+                btn_payer.setEnabled(False)
+            else:
+                btn_payer.clicked.connect(lambda _, e=eleve, r=reste: self.ouvrir_dialog_paiement(e, r))
+            self.table.setCellWidget(row_idx, 6, btn_payer)
+
+            btn_historique = QPushButton("📜 Voir")
+            btn_historique.clicked.connect(lambda _, e=eleve: self.ouvrir_dialog_historique(e))
+            self.table.setCellWidget(row_idx, 7, btn_historique)
+
+        self.mettre_a_jour_stats(total_encaisse_global, total_reste_global, len(eleves))
+
+    def ouvrir_dialog_ajout(self):
+        dialog = EleveDialog(self)
+        if dialog.exec():
+            self.remplir_filtre_classes()
+            self.charger_eleves()
+
+    def ouvrir_dialog_paiement(self, eleve, reste):
+        dialog = PaiementDialog(
+            eleve_id=eleve['id'],
+            nom_eleve=eleve['nom'],
+            prenom_eleve=eleve['prenom'],
+            classe=eleve['classe'],
+            reste_a_payer=reste,
+            parent=self
+        )
+        if dialog.exec():
+            self.remplir_filtre_classes()
+            self.charger_eleves()
+
+    def ouvrir_dialog_historique(self, eleve):
+        dialog = HistoriqueDialog(eleve, self)
+        dialog.exec()
+
+    def ouvrir_dialog_parametres(self):
+        dialog = ParametresDialog(self)
+        dialog.exec()
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
     def creer_carte_stat(self, titre, valeur_initiale, couleur):
         frame = QFrame()
         frame.setStyleSheet(f"""

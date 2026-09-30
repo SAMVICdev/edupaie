@@ -47,6 +47,37 @@ class EleveService:
         return EleveService.obtenir_eleve_par_id(eleve_id)
 
     @staticmethod
+    def filtrer_eleves(recherche='', classe='', statut='Tous'):
+        """Filtre les élèves par nom/prénom, classe et statut de paiement."""
+        eleves = EleveDAO.obtenir_tous()
+        terme = (recherche or '').strip().lower()
+        classe = (classe or '').strip()
+        statut = statut or 'Tous'
+
+        resultat = []
+        for eleve in eleves:
+            nom = (eleve.get('nom') or '').lower()
+            prenom = (eleve.get('prenom') or '').lower()
+            classe_eleve = (eleve.get('classe') or '')
+
+            if terme and terme not in f"{nom} {prenom}":
+                continue
+            if classe and classe_eleve != classe:
+                continue
+
+            details = EleveService.obtenir_eleve_par_id(eleve['id'])
+            reste = details.get('reste_a_payer', eleve.get('montant_total_due', 0.0)) if details else eleve.get('montant_total_due', 0.0)
+
+            if statut == 'Soldé' and reste > 0:
+                continue
+            if statut == 'Non soldé' and reste <= 0:
+                continue
+
+            resultat.append(eleve)
+
+        return resultat
+
+    @staticmethod
     def modifier_eleve(eleve_id, nom, prenom, classe, annee_scolaire, montant_total_due):
         """Met à jour les informations d'un élève."""
         return EleveDAO.modifier(
