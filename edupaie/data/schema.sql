@@ -20,3 +20,17 @@ CREATE TABLE IF NOT EXISTS paiements (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (eleve_id) REFERENCES eleves(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS parametres (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    nom_ecole TEXT NOT NULL,
+    adresse TEXT,
+    telephone TEXT,
+    email TEXT,
+    chemin_logo TEXT,
+    chemin_signature TEXT
+);
+
+-- Insertion de la configuration par défaut de l'établissement
+INSERT OR IGNORE INTO parametres (id, nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature)
+VALUES (1, 'Nom de l''Établissement', 'Adresse de l''école', '+228 00 00 00 00', 'contact@ecole.com', '', '');

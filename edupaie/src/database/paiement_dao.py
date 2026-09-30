@@ -44,3 +44,13 @@ class PaiementDAO:
         row = cursor.fetchone()
         conn.close()
         return row["numero_recu"] if row else None
+
+    @staticmethod
+    def obtenir_total_encaisse():
+        """Calcule la somme totale de tous les règlements enregistrés."""
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT SUM(montant) FROM paiements")
+        row = cursor.fetchone()
+        conn.close()
+        return row[0] if row[0] else 0.0
