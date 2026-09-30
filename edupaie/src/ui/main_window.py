@@ -6,12 +6,13 @@ from src.database.eleve_dao import EleveDAO
 from src.services.eleve_service import EleveService
 from src.ui.eleve_dialog import EleveDialog
 from src.ui.paiement_dialog import PaiementDialog
+from src.ui.parametres_dialog import ParametresDialog
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("EDUPAIE - Gestion des Paiements Scolaires")
-        self.resize(950, 500)
+        self.resize(980, 520)
 
         # Widget Central
         self.central_widget = QWidget()
@@ -21,16 +22,23 @@ class MainWindow(QMainWindow):
         # En-tête
         header_layout = QHBoxLayout()
         self.titre = QLabel("Liste des Élèves")
-        self.titre.setStyleSheet("font-size: 18px; font-weight: bold;")
+        self.titre.setStyleSheet("font-size: 20px; font-weight: bold;")
+        
+        # Bouton Paramètres de l'école
+        self.btn_parametres = QPushButton("⚙️ Paramètres ")
+        self.btn_parametres.clicked.connect(self.ouvrir_dialog_parametres)
+
+        # Bouton Nouvel Élève
         self.btn_ajouter = QPushButton("+ Nouvel Élève")
         self.btn_ajouter.clicked.connect(self.ouvrir_dialog_ajout)
 
         header_layout.addWidget(self.titre)
         header_layout.addStretch()
+        header_layout.addWidget(self.btn_parametres)
         header_layout.addWidget(self.btn_ajouter)
         self.main_layout.addLayout(header_layout)
 
-        # Tableau (7 colonnes avec la colonne Action)
+        # Tableau (7 colonnes)
         self.table = QTableWidget()
         self.table.setColumnCount(7)
         self.table.setHorizontalHeaderLabels([
@@ -59,28 +67,39 @@ class MainWindow(QMainWindow):
             self.table.setItem(row_idx, 4, QTableWidgetItem(f"{eleve['montant_total_due']:,.0f} FCFA"))
             self.table.setItem(row_idx, 5, QTableWidgetItem(f"{reste:,.0f} FCFA"))
 
-            # Création du bouton Payer dans la 7ème colonne (Action)
+            # Création du bouton Payer dans la colonne Action
             btn_payer = QPushButton("Payer")
             if reste <= 0:
                 btn_payer.setText("Soldé")
                 btn_payer.setEnabled(False)
             else:
-                # Utilisation d'une lambda pour passer les infos de l'élève au clic
                 btn_payer.clicked.connect(lambda _, e=eleve, r=reste: self.ouvrir_dialog_paiement(e, r))
 
             self.table.setCellWidget(row_idx, 6, btn_payer)
 
     def ouvrir_dialog_ajout(self):
-        """Ouvre la pop-up d'inscription d'élève."""
+        """Ouvre la fenêtre de saisie d'un nouvel élève."""
         dialog = EleveDialog(self)
         if dialog.exec():
             self.charger_eleves()
 
     def ouvrir_dialog_paiement(self, eleve, reste):
-        """Ouvre la pop-up d'enregistrement de règlement."""
-        dialog = PaiementDialog(eleve['id'], f"{eleve['nom']} {eleve['prenom']}", reste, self)
+        """Ouvre la fenêtre d'enregistrement de paiement."""
+        dialog = PaiementDialog(
+            eleve_id=eleve['id'],
+            nom_eleve=eleve['nom'],
+            prenom_eleve=eleve['prenom'],
+            classe=eleve['classe'],
+            reste_a_payer=reste,
+            parent=self
+        )
         if dialog.exec():
             self.charger_eleves()
+
+    def ouvrir_dialog_parametres(self):
+        """Ouvre la boîte de dialogue de configuration de l'établissement."""
+        dialog = ParametresDialog(self)
+        dialog.exec()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
