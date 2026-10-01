@@ -12,3 +12,8 @@ recus/
 venv/
 data/*.db
 *.db
+
+edupaie/data/exports/*
+edupaie/data/recu/*
+*.xlsx
+*.csv

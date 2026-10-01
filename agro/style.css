@@ -404,7 +404,7 @@ body.page-contact .navigation a[href="contact.html"] {
 
 .pied-de-page {
   background-color: var(--fond-gris-footer);
-  padding-top: 48px;
+  padding-top: 32px;
 }
 
 .grille-footer {
@@ -467,14 +467,15 @@ body.page-contact .navigation a[href="contact.html"] {
 body.page-accueil .section-principale {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 56px;
+  gap: 40px;
   align-items: center;
-  padding-top: 64px;
-  padding-bottom: 64px;
+  padding-top: 36px;
+  padding-bottom: 36px;
 }
 
 body.page-accueil .section-principale h1 {
   max-width: 480px;
+  margin-bottom: 8px;
 }
 
 /* Met en avant le mot "agriculture" au sein du H1 — nécessite un <span>
@@ -490,8 +491,8 @@ body.page-accueil .section-principale > p {
 
 body.page-accueil .groupe-boutons {
   display: flex;
-  gap: 16px;
-  margin-top: 8px;
+  gap: 14px;
+  margin-top: 6px;
   flex-wrap: wrap;
 }
 
@@ -512,8 +513,8 @@ body.page-accueil .section-principale::after {
 
 /* ---- Impact en chiffres ---- */
 body.page-accueil .section-chiffres {
-  padding-top: 70px;
-  padding-bottom: 20px;
+  padding-top: 36px;
+  padding-bottom: 16px;
 }
 
 body.page-accueil .section-chiffres h2 {
@@ -554,7 +555,7 @@ body.page-accueil .carte-chiffre:last-child {
   color: var(--blanc);
   position: relative;
   overflow: hidden;
-  min-height: 280px;
+  min-height: 240px;
 }
 
 body.page-accueil .carte-chiffre:last-child h3 {
@@ -589,7 +590,7 @@ body.page-accueil .carte-chiffre:last-child::after {
 body.page-accueil .carte-chiffre {
   position: relative;
   overflow: hidden;
-  min-height: 280px;
+  min-height: 240px;
   background-size: cover;
   background-position: center;
   display: flex;
@@ -644,18 +645,18 @@ body.page-accueil .carte-chiffre:nth-child(4) {
 
 /* ---- Dernières nouvelles (accueil) ---- */
 body.page-accueil .section-actualites {
-  padding-top: 80px;
-  padding-bottom: 30px;
+  padding-top: 40px;
+  padding-bottom: 20px;
 }
 
 body.page-accueil .section-actualites h2 {
-  margin-bottom: 26px;
+  margin-bottom: 16px;
 }
 
 body.page-accueil .grille-actualites {
   display: grid;
   grid-template-columns: 1.3fr 1fr 1fr;
-  gap: 24px;
+  gap: 20px;
 }
 
 body.page-accueil .carte-actualite {
@@ -724,13 +725,13 @@ body.page-accueil .carte-actualite a.lien {
 
 /* ---- Appel à l'action (bannière photo) ---- */
 body.page-accueil .section-cta {
-  margin: 90px 60px 60px;
-  padding: 60px;
+  margin: 50px 60px 40px;
+  padding: 40px;
   border-radius: var(--rayon-l);
   position: relative;
   overflow: hidden;
   color: var(--texte-fonce);
-  min-height: 320px;
+  min-height: 260px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -788,8 +789,8 @@ body.page-accueil .section-cta a.bouton:hover {
 body.page-apropos .section-apropos {
   position: relative;
   text-align: center;
-  padding-top: 110px;
-  padding-bottom: 90px;
+  padding-top: 55px;
+  padding-bottom: 50px;
   color: var(--texte-fonce);
   overflow: hidden;
 }
@@ -830,8 +831,8 @@ body.page-apropos .section-apropos::after {
 
 /* ---- Notre Mission ---- */
 body.page-apropos .section-mission {
-  padding-top: 60px;
-  padding-bottom: 70px;
+  padding-top: 36px;
+  padding-bottom: 36px;
 }
 
 .contenu-mission {
@@ -864,9 +865,9 @@ body.page-apropos .section-mission {
 
 .statistiques-mission {
   display: flex;
-  gap: 48px;
-  margin-top: 28px;
-  padding-top: 24px;
+  gap: 36px;
+  margin-top: 20px;
+  padding-top: 16px;
   border-top: 1px solid var(--bordure);
 }
 
@@ -889,8 +890,8 @@ body.page-apropos .section-mission {
 /* ---- Notre Vision ---- */
 body.page-apropos .section-vision {
   background-color: var(--vert-clair-fond);
-  padding-top: 70px;
-  padding-bottom: 80px;
+  padding-top: 40px;
+  padding-bottom: 45px;
   text-align: center;
 }
 
@@ -958,8 +959,8 @@ body.page-apropos .section-vision .accroche-vision {
 
 /* ---- L'Équipe ---- */
 body.page-apropos .section-equipe {
-  padding-top: 80px;
-  padding-bottom: 90px;
+  padding-top: 40px;
+  padding-bottom: 45px;
   text-align: center;
 }
 
@@ -969,7 +970,7 @@ body.page-apropos .section-equipe h2 {
 
 body.page-apropos .section-equipe .intro-equipe {
   max-width: 560px;
-  margin: 0 auto 44px;
+  margin: 0 auto 28px;
 }
 
 .grille-equipe {
@@ -1048,7 +1049,7 @@ body.page-apropos .section-equipe .intro-equipe {
 
 .conclusion-equipe {
   max-width: 620px;
-  margin: 44px auto 0;
+  margin: 28px auto 0;
   font-family: var(--police-titres);
   font-weight: 600;
   font-size: 1.02rem;
@@ -1058,8 +1059,8 @@ body.page-apropos .section-equipe .intro-equipe {
 /* ---- Nos Valeurs ---- */
 body.page-apropos .section-valeurs {
   background-color: var(--fond-gris);
-  padding-top: 70px;
-  padding-bottom: 70px;
+  padding-top: 40px;
+  padding-bottom: 40px;
   text-align: center;
 }
 
@@ -1074,10 +1075,10 @@ body.page-apropos .section-valeurs > p {
 
 .grille-valeurs {
   max-width: var(--largeur-max);
-  margin: 40px auto 0;
+  margin: 28px auto 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 16px;
   text-align: left;
 }
 
@@ -1146,8 +1147,8 @@ body.page-apropos .section-valeurs > p {
 
 /* ---- Zones d'intervention ---- */
 body.page-apropos .section-zones {
-  padding-top: 80px;
-  padding-bottom: 90px;
+  padding-top: 40px;
+  padding-bottom: 45px;
 }
 
 .section-zones {
@@ -1163,10 +1164,10 @@ body.page-apropos .section-zones {
 }
 
 .liste-zones {
-  margin: 20px 0 28px;
+  margin: 14px 0 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .liste-zones li {
@@ -1200,8 +1201,8 @@ body.page-apropos .section-zones::after {
 body.page-produit .section-produits {
   text-align: center;
   background-color: var(--vert-clair-fond);
-  padding-top: 70px;
-  padding-bottom: 70px;
+  padding-top: 40px;
+  padding-bottom: 40px;
 }
 
 body.page-produit .section-produits > p:first-child {
@@ -1262,8 +1263,8 @@ body.page-produit .section-produits > p:last-child {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 22px;
-  padding-top: 40px;
-  padding-bottom: 70px;
+  padding-top: 28px;
+  padding-bottom: 40px;
 }
 
 .carte-produit {
@@ -1377,8 +1378,8 @@ body.page-actualite .section-actualites p {
 
 /* ---- Article à la une ---- */
 body.page-actualite .article-une {
-  padding-top: 20px;
-  padding-bottom: 90px;
+  padding-top: 14px;
+  padding-bottom: 40px;
 }
 
 .carte-article-une {
@@ -1387,7 +1388,7 @@ body.page-actualite .article-une {
   margin: 0 auto;
   border-radius: var(--rayon-l);
   overflow: hidden;
-  min-height: 400px;
+  min-height: 340px;
   display: flex;
   align-items: center;
 }
@@ -1410,7 +1411,7 @@ body.page-actualite .article-une {
   background-color: var(--surface);
   border-radius: var(--rayon-m);
   box-shadow: var(--ombre-flottante);
-  padding: 36px;
+  padding: 28px;
   max-width: 420px;
   margin-left: 46%;
 }
@@ -1460,7 +1461,7 @@ body.page-actualite .article-une {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
   gap: 16px;
 }
@@ -1556,10 +1557,10 @@ body.page-actualite .article-une {
 /* ---- Newsletter ---- */
 .section-newsletter {
   max-width: var(--largeur-max);
-  margin: 0 auto 80px;
+  margin: 0 auto 40px;
   background-color: var(--vert-fonce);
   border-radius: var(--rayon-l);
-  padding: 48px 60px;
+  padding: 32px 40px;
   text-align: center;
   color: var(--blanc);
 }
@@ -1571,7 +1572,7 @@ body.page-actualite .article-une {
 .section-newsletter p {
   color: rgba(255, 255, 255, 0.82);
   max-width: 480px;
-  margin: 0 auto 24px;
+  margin: 0 auto 16px;
 }
 
 .formulaire-newsletter {
@@ -1606,11 +1607,11 @@ body.page-actualite .article-une {
 /* ---- Événements à venir ---- */
 .section-evenements {
   max-width: var(--largeur-max);
-  margin: 0 auto 90px;
+  margin: 0 auto 50px;
 }
 
 .section-evenements h2 {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .carte-evenement {
@@ -1678,8 +1679,8 @@ body.page-actualite .article-une {
 
 body.page-contact .section-contact {
   position: relative;
-  padding-top: 90px;
-  padding-bottom: 70px;
+  padding-top: 50px;
+  padding-bottom: 45px;
   overflow: hidden;
 }
 
@@ -1717,7 +1718,7 @@ body.page-contact .section-contact::before {
   display: grid;
   grid-template-columns: 0.85fr 1fr;
   gap: 32px;
-  padding-bottom: 90px;
+  padding-bottom: 50px;
   align-items: start;
 }
 
@@ -2112,7 +2113,7 @@ body.page-contact .section-contact::before {
    ========================================================================== */
 
 .section-carrousel {
-  padding-top: 54px;
+  padding-top: 30px;
 }
 
 .carrousel {
