@@ -1,0 +1,10 @@
+id,nom,prenom,classe,annee_scolaire,montant_total_due,total_paye,reste_a_payer,statut
+6,Aline,Sophie,3B,2026-2027,"8,000",0,"8,000",Non soldé
+7,Export,Test,5A,2026-2027,"25,000",0,"25,000",Non soldé
+8,Export,Test,5A,2026-2027,"25,000",0,"25,000",Non soldé
+9,Export,Test,5A,2026-2027,"25,000",0,"25,000",Non soldé
+4,Flow,Test,6A,2026-2027,"5,000","1,000","4,000",Non soldé
+5,Martin,Jean,3A,2026-2027,"5,000",0,"5,000",Non soldé
+3,Paiement,Test,6A,2026-2027,"5,000",0,"5,000",Non soldé
+2,Test,User,3A,2026-2027,"20,000",0,"20,000",Non soldé
+1,test,adjo,3 eme,2025-2026,"10,000",0,"10,000",Non soldé
