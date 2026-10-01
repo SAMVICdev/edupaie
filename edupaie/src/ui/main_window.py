@@ -1,4 +1,5 @@
 import sys
+import os
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QLabel, QPushButton, QTableWidget, 
                              QTableWidgetItem, QMessageBox, QHeaderView, QFrame,
@@ -20,13 +21,14 @@ class MainWindow(QMainWindow):
 
         # Widget Central
         self.central_widget = QWidget()
+        self.central_widget.setObjectName("centralWidget")
         self.setCentralWidget(self.central_widget)
         self.main_layout = QVBoxLayout(self.central_widget)
 
         # En-tête
         header_layout = QHBoxLayout()
         self.titre = QLabel("Tableau de Bord & Élèves")
-        self.titre.setStyleSheet("font-size: 20px; font-weight: bold;")
+        self.titre.setObjectName("pageTitle")
         
         self.btn_parametres = QPushButton("⚙️ Paramètres")
         self.btn_parametres.clicked.connect(self.ouvrir_dialog_parametres)
@@ -166,98 +168,36 @@ class MainWindow(QMainWindow):
         dialog = ParametresDialog(self)
         dialog.exec()
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
     def creer_carte_stat(self, titre, valeur_initiale, couleur):
         frame = QFrame()
-        frame.setStyleSheet(f"""
-            QFrame {{
-                background-color: #f8f9fa;
-                border-left: 5px solid {couleur};
-                border-radius: 4px;
-                padding: 8px;
-            }}
-        """)
+        frame.setObjectName("statCard")
         layout = QVBoxLayout(frame)
+        layout.setContentsMargins(14, 10, 14, 10)
         lbl_titre = QLabel(titre)
-        lbl_titre.setStyleSheet("color: #555555; font-size: 12px;")
+        lbl_titre.setObjectName("statLabel")
         lbl_valeur = QLabel(valeur_initiale)
-        lbl_valeur.setObjectName("valeur")
-        lbl_valeur.setStyleSheet(f"color: {couleur}; font-size: 16px; font-weight: bold;")
-        
+        lbl_valeur.setObjectName("statValue")
         layout.addWidget(lbl_titre)
         layout.addWidget(lbl_valeur)
         return frame
 
     def mettre_a_jour_stats(self, total_encaisse, total_reste, nbr_eleves):
-        self.card_total_encaisse.findChild(QLabel, "valeur").setText(f"{total_encaisse:,.0f} FCFA")
-        self.card_total_impayes.findChild(QLabel, "valeur").setText(f"{total_reste:,.0f} FCFA")
-        self.card_total_eleves.findChild(QLabel, "valeur").setText(str(nbr_eleves))
+        self.card_total_encaisse.findChild(QLabel, "statValue").setText(f"{total_encaisse:,.0f} FCFA")
+        self.card_total_impayes.findChild(QLabel, "statValue").setText(f"{total_reste:,.0f} FCFA")
+        self.card_total_eleves.findChild(QLabel, "statValue").setText(str(nbr_eleves))
 
-    def charger_eleves(self):
-        eleves = EleveDAO.obtenir_tous()
-        self.table.setRowCount(0)
-
-        total_encaisse_global = PaiementDAO.obtenir_total_encaisse()
-        total_reste_global = 0.0
-
-        for row_idx, eleve in enumerate(eleves):
-            self.table.insertRow(row_idx)
-            
-            details = EleveService.obtenir_eleve_par_id(eleve['id'])
-            reste = details['reste_a_payer'] if details else eleve['montant_total_due']
-            total_reste_global += reste
-
-            self.table.setItem(row_idx, 0, QTableWidgetItem(str(eleve['id'])))
-            self.table.setItem(row_idx, 1, QTableWidgetItem(eleve['nom']))
-            self.table.setItem(row_idx, 2, QTableWidgetItem(eleve['prenom']))
-            self.table.setItem(row_idx, 3, QTableWidgetItem(eleve['classe']))
-            self.table.setItem(row_idx, 4, QTableWidgetItem(f"{eleve['montant_total_due']:,.0f} FCFA"))
-            self.table.setItem(row_idx, 5, QTableWidgetItem(f"{reste:,.0f} FCFA"))
-
-            # Bouton Payer
-            btn_payer = QPushButton("Payer")
-            if reste <= 0:
-                btn_payer.setText("Soldé")
-                btn_payer.setEnabled(False)
-            else:
-                btn_payer.clicked.connect(lambda _, e=eleve, r=reste: self.ouvrir_dialog_paiement(e, r))
-            self.table.setCellWidget(row_idx, 6, btn_payer)
-
-            # Bouton Historique
-            btn_historique = QPushButton("📜 Voir")
-            btn_historique.clicked.connect(lambda _, e=eleve: self.ouvrir_dialog_historique(e))
-            self.table.setCellWidget(row_idx, 7, btn_historique)
-
-        self.mettre_a_jour_stats(total_encaisse_global, total_reste_global, len(eleves))
-
-    def ouvrir_dialog_ajout(self):
-        dialog = EleveDialog(self)
-        if dialog.exec():
-            self.charger_eleves()
-
-    def ouvrir_dialog_paiement(self, eleve, reste):
-        dialog = PaiementDialog(
-            eleve_id=eleve['id'],
-            nom_eleve=eleve['nom'],
-            prenom_eleve=eleve['prenom'],
-            classe=eleve['classe'],
-            reste_a_payer=reste,
-            parent=self
-        )
-        if dialog.exec():
-            self.charger_eleves()
-
-    def ouvrir_dialog_historique(self, eleve):
-        dialog = HistoriqueDialog(eleve, self)
-        dialog.exec()
-
-    def ouvrir_dialog_parametres(self):
-        dialog = ParametresDialog(self)
-        dialog.exec()
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    base_dir = getattr(sys, "_MEIPASS", os.path.dirname(__file__))
+    stylesheet_path = os.path.join(base_dir, "style.qss")
+    if not os.path.exists(stylesheet_path):
+        stylesheet_path = os.path.join(base_dir, "src", "ui", "style.qss")
+    if os.path.exists(stylesheet_path):
+        with open(stylesheet_path, "r", encoding="utf-8") as stylesheet_file:
+            app.setStyleSheet(stylesheet_file.read())
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
