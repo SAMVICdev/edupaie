@@ -23,20 +23,23 @@ class PaiementService:
         return f"REC-{annee_courante}-{compteur:04d}"
 
     @staticmethod
-    def enregistrer_paiement(eleve_id, montant, mode_paiement):
+    def enregistrer_paiement(eleve_id, montant, mode_paiement, date_paiement=None):
         """Valide et enregistre un versement."""
+        modes_autorises = {"Espèces", "TMoney", "Moov Money", "Mobile Money", "Chèque", "Virement"}
+        if mode_paiement not in modes_autorises:
+            raise ValueError("Le mode de règlement sélectionné n'est pas valide.")
         if montant <= 0:
             raise ValueError("Le montant du paiement doit être supérieur à 0.")
 
         details = EleveService.obtenir_details_eleve(eleve_id)
-        if not details or not details['eleve']:
+        if not details:
             raise ValueError("L'élève spécifié n'existe pas.")
 
         if montant > details['reste_a_payer']:
             raise ValueError(f"Le montant ({montant}) dépasse le reste à payer ({details['reste_a_payer']}).")
 
         numero_recu = PaiementService.generer_numero_recu()
-        date_paiement = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        date_paiement = date_paiement or datetime.now().strftime("%Y-%m-%d")
 
         paiement_id = PaiementDAO.ajouter_paiement(
             eleve_id=eleve_id,
@@ -50,5 +53,7 @@ class PaiementService:
             "paiement_id": paiement_id,
             "numero_recu": numero_recu,
             "montant": montant,
-            "nouveau_reste": details['reste_a_payer'] - montant
+            "nouveau_reste": details['reste_a_payer'] - montant,
+            "date_paiement": date_paiement,
+            "mode_paiement": mode_paiement,
         }

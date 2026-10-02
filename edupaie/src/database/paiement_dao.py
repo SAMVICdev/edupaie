@@ -46,6 +46,24 @@ class PaiementDAO:
         return row["numero_recu"] if row else None
 
     @staticmethod
+    def obtenir_dernier_recu():
+        return PaiementDAO.obtenir_dernier_numero_recu()
+
+    @staticmethod
+    def ajouter_paiement(eleve_id, montant, date_paiement, mode_paiement, numero_recu):
+        return PaiementDAO.ajouter(numero_recu, eleve_id, montant, date_paiement, mode_paiement)
+
+    @staticmethod
+    def obtenir_total_paye_par_eleve(eleve_id):
+        conn = get_connection()
+        row = conn.execute(
+            "SELECT COALESCE(SUM(montant), 0) FROM paiements WHERE eleve_id = ?",
+            (eleve_id,),
+        ).fetchone()
+        conn.close()
+        return float(row[0] or 0)
+
+    @staticmethod
     def obtenir_total_encaisse():
         """Calcule la somme totale de tous les règlements enregistrés."""
         conn = get_connection()

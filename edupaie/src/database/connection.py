@@ -18,6 +18,49 @@ def init_db():
             schema_sql = f.read()
         conn = get_connection()
         conn.executescript(schema_sql)
+        colonnes_eleves = {row[1] for row in conn.execute("PRAGMA table_info(eleves)")}
+        if "matricule" not in colonnes_eleves:
+            conn.execute("ALTER TABLE eleves ADD COLUMN matricule TEXT")
+        eleves_sans_matricule = conn.execute(
+            "SELECT id FROM eleves WHERE matricule IS NULL OR matricule = ''"
+        ).fetchall()
+        for eleve in eleves_sans_matricule:
+            conn.execute(
+                "UPDATE eleves SET matricule = ? WHERE id = ?",
+                (f"EDU-{eleve[0]:06d}", eleve[0]),
+            )
+        conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_eleves_matricule ON eleves(matricule)")
+        schema_paiements = conn.execute(
+            "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'paiements'"
+        ).fetchone()
+        if schema_paiements and "TMoney" not in schema_paiements[0]:
+            conn.commit()
+            conn.execute("PRAGMA foreign_keys = OFF")
+            conn.execute("BEGIN")
+            conn.execute("""
+                CREATE TABLE paiements_migration (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    numero_recu TEXT UNIQUE NOT NULL,
+                    eleve_id INTEGER NOT NULL,
+                    montant REAL NOT NULL CHECK(montant > 0),
+                    date_paiement DATE NOT NULL,
+                    mode_paiement TEXT NOT NULL CHECK(mode_paiement IN (
+                        'Espèces', 'Chèque', 'Virement', 'Mobile Money', 'TMoney', 'Moov Money'
+                    )),
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (eleve_id) REFERENCES eleves(id) ON DELETE CASCADE
+                )
+            """)
+            conn.execute("""
+                INSERT INTO paiements_migration
+                (id, numero_recu, eleve_id, montant, date_paiement, mode_paiement, created_at)
+                SELECT id, numero_recu, eleve_id, montant, date_paiement, mode_paiement, created_at
+                FROM paiements
+            """)
+            conn.execute("DROP TABLE paiements")
+            conn.execute("ALTER TABLE paiements_migration RENAME TO paiements")
+            conn.commit()
+            conn.execute("PRAGMA foreign_keys = ON")
         conn.commit()
         conn.close()
 

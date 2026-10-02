@@ -1,4 +1,6 @@
 import os
+import subprocess
+import sys
 from fpdf import FPDF
 from src.database.parametres_dao import ParametresDAO
 
@@ -28,6 +30,7 @@ class PDFService:
         pdf.cell(0, 8, text=f"Reçu N° : {paiement_info['numero_recu']}", new_x="LMARGIN", new_y="NEXT")
         pdf.set_font("Helvetica", size=11)
         pdf.cell(0, 6, text=f"Élève : {eleve_nom} {eleve_prenom} (Classe: {classe})", new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 6, text=f"Date : {paiement_info.get('date_paiement', '')}", new_x="LMARGIN", new_y="NEXT")
         pdf.cell(0, 6, text=f"Mode de paiement : {paiement_info.get('mode_paiement', 'Espèces')}", new_x="LMARGIN", new_y="NEXT")
         pdf.ln(5)
 
@@ -44,3 +47,25 @@ class PDFService:
         chemin_pdf = os.path.join(dossier_recus, f"Recu_{paiement_info['numero_recu']}.pdf")
         pdf.output(chemin_pdf)
         return chemin_pdf
+
+    @staticmethod
+    def ouvrir_recu(chemin_pdf):
+        if not os.path.isfile(chemin_pdf):
+            raise FileNotFoundError(f"Reçu introuvable : {chemin_pdf}")
+        chemin_absolu = os.path.abspath(chemin_pdf)
+        if sys.platform == "win32":
+            os.startfile(chemin_absolu)
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", chemin_absolu])
+        else:
+            subprocess.Popen(["xdg-open", chemin_absolu])
+
+    @staticmethod
+    def imprimer_recu(chemin_pdf):
+        if not os.path.isfile(chemin_pdf):
+            raise FileNotFoundError(f"Reçu introuvable : {chemin_pdf}")
+        chemin_absolu = os.path.abspath(chemin_pdf)
+        if sys.platform == "win32":
+            os.startfile(chemin_absolu, "print")
+        else:
+            subprocess.Popen(["lp", chemin_absolu])

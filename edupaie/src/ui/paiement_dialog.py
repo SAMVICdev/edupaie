@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import (QDialog, QFormLayout, QDoubleSpinBox, 
-                             QComboBox, QPushButton, QMessageBox, QHBoxLayout)
+                             QComboBox, QPushButton, QMessageBox, QHBoxLayout, QDateEdit)
+from PySide6.QtCore import QDate
 from src.services.paiement_service import PaiementService
 from src.services.pdf_service import PDFService
 
@@ -22,10 +23,15 @@ class PaiementDialog(QDialog):
         self.input_montant.setSingleStep(1000)
 
         self.combo_mode = QComboBox()
-        self.combo_mode.addItems(["Espèces", "Chèque", "Virement", "Mobile Money"])
+        self.combo_mode.addItems(["Espèces", "TMoney", "Moov Money", "Chèque", "Virement"])
+
+        self.input_date = QDateEdit(QDate.currentDate())
+        self.input_date.setCalendarPopup(True)
+        self.input_date.setDisplayFormat("dd/MM/yyyy")
 
         self.layout.addRow("Montant à verser (FCFA) :", self.input_montant)
         self.layout.addRow("Mode de paiement :", self.combo_mode)
+        self.layout.addRow("Date du versement :", self.input_date)
 
         btn_layout = QHBoxLayout()
         self.btn_valider = QPushButton("Valider le paiement")
@@ -37,13 +43,20 @@ class PaiementDialog(QDialog):
 
         self.btn_valider.clicked.connect(self.enregistrer)
         self.btn_annuler.clicked.connect(self.reject)
+        self.input_montant.lineEdit().returnPressed.connect(self.combo_mode.setFocus)
+        self.combo_mode.activated.connect(lambda: self.input_date.setFocus())
+        self.input_date.lineEdit().returnPressed.connect(self.btn_valider.click)
+        self.input_montant.setFocus()
 
     def enregistrer(self):
         montant = self.input_montant.value()
         mode_paiement = self.combo_mode.currentText()
 
         try:
-            res = PaiementService.enregistrer_paiement(self.eleve_id, montant, mode_paiement)
+            date_paiement = self.input_date.date().toString("yyyy-MM-dd")
+            res = PaiementService.enregistrer_paiement(
+                self.eleve_id, montant, mode_paiement, date_paiement
+            )
             res['mode_paiement'] = mode_paiement
 
             # Génération automatique du PDF

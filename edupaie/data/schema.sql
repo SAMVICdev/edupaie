@@ -2,6 +2,7 @@ PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS eleves (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    matricule TEXT UNIQUE,
     nom TEXT NOT NULL,
     prenom TEXT NOT NULL,
     classe TEXT NOT NULL,
@@ -16,7 +17,7 @@ CREATE TABLE IF NOT EXISTS paiements (
     eleve_id INTEGER NOT NULL,
     montant REAL NOT NULL CHECK(montant > 0),
     date_paiement DATE NOT NULL,
-    mode_paiement TEXT NOT NULL CHECK(mode_paiement IN ('Espèces', 'Chèque', 'Virement', 'Mobile Money')),
+    mode_paiement TEXT NOT NULL CHECK(mode_paiement IN ('Espèces', 'Chèque', 'Virement', 'Mobile Money', 'TMoney', 'Moov Money')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (eleve_id) REFERENCES eleves(id) ON DELETE CASCADE
 );
@@ -28,7 +29,17 @@ CREATE TABLE IF NOT EXISTS parametres (
     telephone TEXT,
     email TEXT,
     chemin_logo TEXT,
-    chemin_signature TEXT
+    chemin_signature TEXT,
+    format_matricule TEXT NOT NULL DEFAULT '{annee}-{classe}-{numero:03d}',
+    password_salt TEXT,
+    password_hash TEXT
+);
+
+CREATE TABLE IF NOT EXISTS echeances (
+    annee_scolaire TEXT NOT NULL,
+    classe TEXT NOT NULL DEFAULT '*',
+    date_echeance DATE NOT NULL,
+    PRIMARY KEY (annee_scolaire, classe)
 );
 
 -- Insertion de la configuration par défaut de l'établissement
