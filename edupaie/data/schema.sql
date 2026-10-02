@@ -32,7 +32,11 @@ CREATE TABLE IF NOT EXISTS parametres (
     chemin_signature TEXT,
     format_matricule TEXT NOT NULL DEFAULT '{annee}-{classe}-{numero:03d}',
     password_salt TEXT,
-    password_hash TEXT
+    password_hash TEXT,
+    recovery_salt TEXT,
+    recovery_hash TEXT,
+    support_email TEXT,
+    support_telephone TEXT
 );
 
 CREATE TABLE IF NOT EXISTS echeances (

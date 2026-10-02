@@ -17,6 +17,7 @@ from src.ui.paiement_dialog import PaiementDialog
 from src.ui.parametres_dialog import ParametresDialog
 from src.ui.historique_dialog import HistoriqueDialog
 from src.ui.connexion_dialog import ConnexionDialog
+from src.ui.assistance_dialog import AssistanceDialog
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -37,6 +38,8 @@ class MainWindow(QMainWindow):
         
         self.btn_parametres = QPushButton("⚙️ Paramètres")
         self.btn_parametres.clicked.connect(self.ouvrir_dialog_parametres)
+        self.btn_aide = QPushButton("Aide")
+        self.btn_aide.clicked.connect(self.ouvrir_assistance)
 
         self.btn_ajouter = QPushButton("+ Nouvel Élève")
         self.btn_ajouter.clicked.connect(self.ouvrir_dialog_ajout)
@@ -54,6 +57,7 @@ class MainWindow(QMainWindow):
         header_layout.addWidget(self.titre)
         header_layout.addStretch()
         header_layout.addWidget(self.btn_parametres)
+        header_layout.addWidget(self.btn_aide)
         header_layout.addWidget(self.btn_ajouter)
         header_layout.addWidget(self.btn_modifier)
         header_layout.addWidget(self.btn_supprimer)
@@ -305,6 +309,9 @@ class MainWindow(QMainWindow):
     def ouvrir_dialog_parametres(self):
         dialog = ParametresDialog(self)
         dialog.exec()
+
+    def ouvrir_assistance(self):
+        AssistanceDialog(self).exec()
 
     def creer_carte_stat(self, titre, valeur_initiale, couleur):
         frame = QFrame()

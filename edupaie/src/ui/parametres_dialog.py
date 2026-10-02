@@ -17,6 +17,10 @@ class ParametresDialog(QDialog):
         self.input_adresse = QLineEdit(params.get("adresse", ""))
         self.input_telephone = QLineEdit(params.get("telephone", ""))
         self.input_email = QLineEdit(params.get("email", ""))
+        self.input_support_email = QLineEdit(params.get("support_email", ""))
+        self.input_support_email.setPlaceholderText("email1@example.com,email2@example.com")
+        self.input_support_telephone = QLineEdit(params.get("support_telephone", ""))
+        self.input_support_telephone.setPlaceholderText("+228...")
         self.input_format_matricule = QLineEdit(
             params.get("format_matricule", "{annee}-{classe}-{numero:03d}")
         )
@@ -24,6 +28,7 @@ class ParametresDialog(QDialog):
         self.btn_echeances = QPushButton("Gérer les échéances scolaires")
         self.btn_echeances.clicked.connect(self.ouvrir_echeances)
         self.protection_initiale = ParametresDAO.protection_active()
+        self.recuperation_initiale = ParametresDAO.obtenir_identifiants_recuperation() is not None
 
         self.checkbox_securite = QCheckBox("Protéger l'application au démarrage")
         self.checkbox_securite.setChecked(self.protection_initiale)
@@ -55,6 +60,9 @@ class ParametresDialog(QDialog):
         self.layout.addRow("Adresse :", self.input_adresse)
         self.layout.addRow("Téléphone :", self.input_telephone)
         self.layout.addRow("Email :", self.input_email)
+        self.layout.addRow(QLabel("Assistance EDUPAIE"))
+        self.layout.addRow("Courriel de support :", self.input_support_email)
+        self.layout.addRow("Téléphone de support :", self.input_support_telephone)
         self.layout.addRow("Format matricule :", self.input_format_matricule)
         self.layout.addRow(self.btn_echeances)
         self.layout.addRow("Tampon / Logo :", logo_layout)
@@ -122,7 +130,12 @@ class ParametresDialog(QDialog):
             QMessageBox.warning(self, "Format matricule invalide", "Vérifiez la syntaxe du format matricule.")
             return
 
-        if self.protection_initiale and (not securite_demandee or nouveau_mot_de_passe or confirmation):
+        if self.protection_initiale and (
+            not securite_demandee
+            or nouveau_mot_de_passe
+            or confirmation
+            or not self.recuperation_initiale
+        ):
             if not SecuriteService.verifier_mot_de_passe(mot_de_passe_actuel):
                 QMessageBox.warning(self, "Sécurité", "Le mot de passe actuel est incorrect.")
                 return
@@ -137,6 +150,18 @@ class ParametresDialog(QDialog):
                 QMessageBox.warning(self, "Sécurité", "La confirmation du mot de passe ne correspond pas.")
                 return
 
+        definir_securite = securite_demandee and (
+            not self.protection_initiale or bool(nouveau_mot_de_passe) or not self.recuperation_initiale
+        )
+        code_recuperation = None
+        if definir_securite:
+            from src.ui.code_recuperation_dialog import CodeRecuperationDialog
+
+            code_recuperation = SecuriteService.generer_code_recuperation()
+            confirmation_code = CodeRecuperationDialog(code_recuperation, self)
+            if confirmation_code.exec() != QDialog.DialogCode.Accepted:
+                return
+
         ParametresDAO.sauvegarder_parametres(
             self.input_nom.text().strip(),
             self.input_adresse.text().strip(),
@@ -144,11 +169,14 @@ class ParametresDialog(QDialog):
             self.input_email.text().strip(),
             self.input_logo.text().strip(),
             self.input_signature.text().strip(),
-            format_matricule
+            format_matricule,
+            self.input_support_email.text().strip(),
+            self.input_support_telephone.text().strip()
         )
 
-        if securite_demandee and (not self.protection_initiale or nouveau_mot_de_passe):
-            SecuriteService.definir_mot_de_passe(nouveau_mot_de_passe)
+        if definir_securite:
+            mot_de_passe = nouveau_mot_de_passe or mot_de_passe_actuel
+            SecuriteService.definir_mot_de_passe(mot_de_passe, code_recuperation)
         elif self.protection_initiale and not securite_demandee:
             ParametresDAO.supprimer_mot_de_passe()
 

@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import (
     QDialog,
     QFormLayout,
+    QHBoxLayout,
     QLabel,
     QLineEdit,
     QMessageBox,
@@ -8,6 +9,8 @@ from PySide6.QtWidgets import (
 )
 
 from src.services.securite_service import SecuriteService
+from src.database.parametres_dao import ParametresDAO
+from src.ui.assistance_dialog import AssistanceDialog
 
 
 class ConnexionDialog(QDialog):
@@ -28,7 +31,27 @@ class ConnexionDialog(QDialog):
         self.btn_connexion = QPushButton("Se connecter")
         self.btn_connexion.clicked.connect(self.verifier)
         layout.addRow(self.btn_connexion)
+
+        actions = QHBoxLayout()
+        self.btn_mot_de_passe_oublie = QPushButton("Mot de passe oublié")
+        self.btn_mot_de_passe_oublie.setEnabled(
+            ParametresDAO.obtenir_identifiants_recuperation() is not None
+        )
+        self.btn_assistance = QPushButton("Aide / assistance")
+        self.btn_mot_de_passe_oublie.clicked.connect(self.ouvrir_recuperation)
+        self.btn_assistance.clicked.connect(self.ouvrir_assistance)
+        actions.addWidget(self.btn_mot_de_passe_oublie)
+        actions.addWidget(self.btn_assistance)
+        layout.addRow(actions)
         self.input_mot_de_passe.setFocus()
+
+    def ouvrir_recuperation(self):
+        from src.ui.reinitialisation_dialog import ReinitialisationDialog
+
+        ReinitialisationDialog(self).exec()
+
+    def ouvrir_assistance(self):
+        AssistanceDialog(self).exec()
 
     def verifier(self):
         if SecuriteService.verifier_mot_de_passe(self.input_mot_de_passe.text()):
