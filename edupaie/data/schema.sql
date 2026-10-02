@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS paiements (
     montant REAL NOT NULL CHECK(montant > 0),
     date_paiement DATE NOT NULL,
     mode_paiement TEXT NOT NULL CHECK(mode_paiement IN ('Espèces', 'Chèque', 'Virement', 'Mobile Money', 'TMoney', 'Moov Money')),
+    total_paye_apres REAL,
+    reste_apres REAL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (eleve_id) REFERENCES eleves(id) ON DELETE CASCADE
 );

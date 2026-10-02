@@ -1,11 +1,23 @@
 import sys
 import os
+import math
+from datetime import date
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QLabel, QPushButton, QTableWidget, 
                              QTableWidgetItem, QMessageBox, QHeaderView, QFrame,
-                             QLineEdit, QComboBox, QDialog, QFileDialog, QInputDialog)
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QKeySequence, QShortcut
+                             QLineEdit, QComboBox, QDialog, QFileDialog, QInputDialog,
+                             QButtonGroup, QScrollArea)
+from PySide6.QtCore import Qt, QMargins, QTimer
+from PySide6.QtGui import QColor, QFont, QFontDatabase, QKeySequence, QPainter, QShortcut
+from PySide6.QtCharts import (
+    QBarCategoryAxis,
+    QBarSeries,
+    QBarSet,
+    QChart,
+    QChartView,
+    QPieSeries,
+    QValueAxis,
+)
 from src.database.connection import init_db
 from src.database.eleve_dao import EleveDAO
 from src.database.paiement_dao import PaiementDAO
@@ -19,50 +31,90 @@ from src.ui.historique_dialog import HistoriqueDialog
 from src.ui.connexion_dialog import ConnexionDialog
 from src.ui.assistance_dialog import AssistanceDialog
 
+
+def charger_police_systeme(app):
+    if sys.platform != "win32":
+        return
+    dossier_polices = os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts")
+    for famille, fichier in (("Segoe UI", "segoeui.ttf"), ("Arial", "arial.ttf")):
+        chemin = os.path.join(dossier_polices, fichier)
+        if os.path.isfile(chemin) and QFontDatabase.addApplicationFont(chemin) >= 0:
+            app.setFont(QFont(famille))
+            return
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("EDUPAIE - Gestion des Paiements Scolaires")
-        self.resize(1050, 600)
+        self.resize(1200, 820)
 
-        # Widget Central
+        # Application shell: fixed navigation rail and scrollable work area.
         self.central_widget = QWidget()
         self.central_widget.setObjectName("centralWidget")
         self.setCentralWidget(self.central_widget)
-        self.main_layout = QVBoxLayout(self.central_widget)
+        self.shell_layout = QHBoxLayout(self.central_widget)
+        self.shell_layout.setContentsMargins(0, 0, 0, 0)
+        self.shell_layout.setSpacing(0)
+
+        self.sidebar = QFrame()
+        self.sidebar.setObjectName("sidebar")
+        self.sidebar.setFixedWidth(228)
+        self.sidebar_layout = QVBoxLayout(self.sidebar)
+        self.sidebar_layout.setContentsMargins(14, 20, 14, 16)
+        self.sidebar_layout.setSpacing(7)
+        self.shell_layout.addWidget(self.sidebar)
+
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setObjectName("dashboardScroll")
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setFrameShape(QFrame.Shape.NoFrame)
+        self.content_widget = QWidget()
+        self.content_widget.setObjectName("dashboardContent")
+        self.scroll_area.setWidget(self.content_widget)
+        self.shell_layout.addWidget(self.scroll_area, 1)
+
+        self.main_layout = QVBoxLayout(self.content_widget)
+        self.main_layout.setContentsMargins(24, 20, 24, 22)
+        self.main_layout.setSpacing(14)
 
         # En-tête
         header_layout = QHBoxLayout()
         self.titre = QLabel("Tableau de Bord & Élèves")
         self.titre.setObjectName("pageTitle")
         
-        self.btn_parametres = QPushButton("⚙️ Paramètres")
+        self.btn_parametres = QPushButton("Paramètres")
         self.btn_parametres.clicked.connect(self.ouvrir_dialog_parametres)
         self.btn_aide = QPushButton("Aide")
+        self.btn_aide.setObjectName("helpAction")
         self.btn_aide.clicked.connect(self.ouvrir_assistance)
 
         self.btn_ajouter = QPushButton("+ Nouvel Élève")
+        self.btn_ajouter.setObjectName("primaryAction")
         self.btn_ajouter.clicked.connect(self.ouvrir_dialog_ajout)
 
         self.btn_modifier = QPushButton("Modifier")
         self.btn_modifier.clicked.connect(self.modifier_eleve_selectionne)
         self.btn_supprimer = QPushButton("Supprimer")
+        self.btn_supprimer.setObjectName("dangerAction")
         self.btn_supprimer.clicked.connect(self.supprimer_eleve_selectionne)
 
         self.btn_importer = QPushButton("Importer")
         self.btn_importer.clicked.connect(self.importer_donnees)
         self.btn_exporter = QPushButton("Exporter")
+        self.btn_exporter.setObjectName("exportAction")
         self.btn_exporter.clicked.connect(self.exporter_donnees)
+
+        self.construire_barre_laterale()
+
+        self.btn_ajouter.setObjectName("primaryAction")
+        self.btn_supprimer.setObjectName("dangerAction")
 
         header_layout.addWidget(self.titre)
         header_layout.addStretch()
-        header_layout.addWidget(self.btn_parametres)
-        header_layout.addWidget(self.btn_aide)
         header_layout.addWidget(self.btn_ajouter)
         header_layout.addWidget(self.btn_modifier)
         header_layout.addWidget(self.btn_supprimer)
-        header_layout.addWidget(self.btn_importer)
-        header_layout.addWidget(self.btn_exporter)
         self.main_layout.addLayout(header_layout)
 
         # Filtres de recherche
@@ -98,18 +150,54 @@ class MainWindow(QMainWindow):
         self.stats_layout.addWidget(self.card_total_eleves)
         self.main_layout.addLayout(self.stats_layout)
 
+        self.charts_layout = QHBoxLayout()
+        self.chart_encaissements = self.creer_graphique_encaissements()
+        self.chart_repartition = self.creer_graphique_repartition()
+        self.charts_layout.addWidget(self.chart_encaissements, 3)
+        self.charts_layout.addWidget(self.chart_repartition, 2)
+        self.main_layout.addLayout(self.charts_layout)
+
         self.table = QTableWidget()
         self.table.setColumnCount(11)
         self.table.setHorizontalHeaderLabels([
-            "ID", "Matricule", "Nom", "Prénom", "Classe", "Frais totaux",
-            "Total versé", "Reste à payer", "Statut", "Paiement", "Historique"
+            "ID", "Matricule", "Nom", "Prénom", "Classe", "Frais",
+            "Versé", "Reste", "Statut", "Paiement", "Historique"
         ])
+        titre_liste = QHBoxLayout()
+        self.lbl_titre_liste = QLabel("Élèves inscrits")
+        self.lbl_titre_liste.setObjectName("sectionHeading")
+        self.lbl_unite_montants = QLabel("Montants en FCFA")
+        self.lbl_unite_montants.setObjectName("sectionNote")
+        titre_liste.addWidget(self.lbl_titre_liste)
+        titre_liste.addStretch()
+        titre_liste.addWidget(self.lbl_unite_montants)
+        self.main_layout.addLayout(titre_liste)
         self.table.setColumnHidden(0, True)
+        self.table.setToolTip("Tous les montants sont exprimés en FCFA.")
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
+        self.table.setAlternatingRowColors(True)
+        self.table.setShowGrid(False)
+        self.table.verticalHeader().setVisible(False)
+        self.table.verticalHeader().setDefaultSectionSize(40)
         self.table.itemSelectionChanged.connect(self.actualiser_actions_selection)
         self.table.cellDoubleClicked.connect(lambda _row, _column: self.modifier_eleve_selectionne())
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
+        self.table.horizontalHeader().setStretchLastSection(False)
+        for colonne, largeur in {
+            1: 110,
+            2: 92,
+            3: 96,
+            4: 74,
+            5: 80,
+            6: 80,
+            7: 82,
+            8: 88,
+            9: 106,
+            10: 76,
+        }.items():
+            self.table.setColumnWidth(colonne, largeur)
+        self.table.horizontalHeader().setStretchLastSection(True)
         self.main_layout.addWidget(self.table)
 
         self.raccourci_nouvel_eleve = QShortcut(QKeySequence("Ctrl+N"), self)
@@ -121,6 +209,92 @@ class MainWindow(QMainWindow):
 
         self.remplir_filtre_classes()
         self.charger_eleves()
+        self._mois_graphique = date.today().strftime("%Y-%m")
+        self.timer_verification_mois = QTimer(self)
+        self.timer_verification_mois.setInterval(60_000)
+        self.timer_verification_mois.timeout.connect(self.verifier_mise_a_jour_mois)
+        self.timer_verification_mois.start()
+
+    def construire_barre_laterale(self):
+        self.groupe_navigation = QButtonGroup(self)
+        self.groupe_navigation.setExclusive(True)
+
+        marque = QLabel("EDUPAIE")
+        marque.setObjectName("sidebarBrand")
+        sous_titre = QLabel("GESTION SCOLAIRE")
+        sous_titre.setObjectName("sidebarSubtitle")
+        self.sidebar_layout.addWidget(marque)
+        self.sidebar_layout.addWidget(sous_titre)
+        self.sidebar_layout.addSpacing(24)
+
+        section_menu = QLabel("ESPACE DE TRAVAIL")
+        section_menu.setObjectName("sidebarSection")
+        self.sidebar_layout.addWidget(section_menu)
+
+        self.btn_nav_dashboard = self.ajouter_navigation(
+            "Tableau de bord", self.aller_au_tableau_de_bord, selectionne=True
+        )
+        self.btn_nav_eleves = self.ajouter_navigation(
+            "Élèves", self.aller_aux_eleves
+        )
+        self.btn_nav_paiement = self.ajouter_navigation(
+            "Nouveau paiement", self.payer_eleve_selectionne
+        )
+        self.sidebar_layout.addWidget(self.btn_nav_dashboard)
+        self.sidebar_layout.addWidget(self.btn_nav_eleves)
+        self.sidebar_layout.addWidget(self.btn_nav_paiement)
+
+        section_donnees = QLabel("DONNÉES")
+        section_donnees.setObjectName("sidebarSection")
+        self.sidebar_layout.addSpacing(18)
+        self.sidebar_layout.addWidget(section_donnees)
+        for bouton in (self.btn_importer, self.btn_exporter):
+            bouton.setObjectName("sidebarNavButton")
+            bouton.setCheckable(True)
+            self.groupe_navigation.addButton(bouton)
+            self.sidebar_layout.addWidget(bouton)
+
+        section_reglages = QLabel("CONFIGURATION")
+        section_reglages.setObjectName("sidebarSection")
+        self.sidebar_layout.addSpacing(18)
+        self.sidebar_layout.addWidget(section_reglages)
+        self.btn_nav_echeances = self.ajouter_navigation(
+            "Échéances scolaires", self.ouvrir_dialog_echeances
+        )
+        for bouton in (self.btn_nav_echeances, self.btn_parametres, self.btn_aide):
+            if bouton not in (self.btn_nav_echeances,):
+                bouton.setObjectName("sidebarNavButton")
+                bouton.setCheckable(True)
+                self.groupe_navigation.addButton(bouton)
+            self.sidebar_layout.addWidget(bouton)
+
+        self.sidebar_layout.addStretch()
+        nom_ecole = ParametresDAO.obtenir_parametres().get("nom_ecole", "Établissement scolaire")
+        self.sidebar_etablissement = QLabel(nom_ecole)
+        self.sidebar_etablissement.setObjectName("sidebarSchool")
+        self.sidebar_etablissement.setWordWrap(True)
+        self.sidebar_layout.addWidget(self.sidebar_etablissement)
+
+    def ajouter_navigation(self, texte, action, selectionne=False):
+        bouton = QPushButton(texte)
+        bouton.setObjectName("sidebarNavButton")
+        bouton.setCheckable(True)
+        bouton.setChecked(selectionne)
+        bouton.clicked.connect(action)
+        self.groupe_navigation.addButton(bouton)
+        return bouton
+
+    def aller_au_tableau_de_bord(self):
+        self.scroll_area.verticalScrollBar().setValue(0)
+
+    def aller_aux_eleves(self):
+        self.scroll_area.ensureWidgetVisible(self.table, 0, 20)
+        self.table.setFocus()
+
+    def ouvrir_dialog_echeances(self):
+        from src.ui.echeance_dialog import EcheanceDialog
+
+        EcheanceDialog(self).exec()
 
     def remplir_filtre_classes(self):
         classes = sorted({eleve.get('classe', '') for eleve in EleveDAO.obtenir_tous() if eleve.get('classe')})
@@ -260,12 +434,21 @@ class MainWindow(QMainWindow):
             self.table.setItem(row_idx, 2, QTableWidgetItem(eleve['nom']))
             self.table.setItem(row_idx, 3, QTableWidgetItem(eleve['prenom']))
             self.table.setItem(row_idx, 4, QTableWidgetItem(eleve['classe']))
-            self.table.setItem(row_idx, 5, QTableWidgetItem(f"{eleve['montant_total_due']:,.0f} FCFA"))
-            self.table.setItem(row_idx, 6, QTableWidgetItem(f"{total_paye:,.0f} FCFA"))
-            self.table.setItem(row_idx, 7, QTableWidgetItem(f"{reste:,.0f} FCFA"))
+            for colonne, montant in ((5, eleve['montant_total_due']), (6, total_paye), (7, reste)):
+                item_montant = QTableWidgetItem(f"{montant:,.0f}".replace(",", " "))
+                item_montant.setTextAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+                self.table.setItem(row_idx, colonne, item_montant)
             statut = EleveService.calculer_statut(eleve, reste)
             item_statut = QTableWidgetItem(statut)
             item_statut.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            couleurs_statut = {
+                "Soldé": ("#e5f3ec", "#25684b"),
+                "En retard": ("#fff0ed", "#a9473d"),
+                "En cours": ("#edf4fa", "#315f86"),
+            }
+            fond, texte = couleurs_statut.get(statut, ("#f1f5f8", "#526273"))
+            item_statut.setBackground(QColor(fond))
+            item_statut.setForeground(QColor(texte))
             self.table.setItem(row_idx, 8, item_statut)
 
             btn_payer = QPushButton("Payer")
@@ -276,11 +459,12 @@ class MainWindow(QMainWindow):
                 btn_payer.clicked.connect(lambda _, e=eleve, r=reste: self.ouvrir_dialog_paiement(e, r))
             self.table.setCellWidget(row_idx, 9, btn_payer)
 
-            btn_historique = QPushButton("📜 Voir")
+            btn_historique = QPushButton("Voir")
             btn_historique.clicked.connect(lambda _, e=eleve: self.ouvrir_dialog_historique(e))
             self.table.setCellWidget(row_idx, 10, btn_historique)
 
         self.mettre_a_jour_stats(total_encaisse_global, total_reste_global, len(eleves))
+        self.actualiser_graphiques()
         self.actualiser_actions_selection()
 
     def ouvrir_dialog_ajout(self):
@@ -316,6 +500,12 @@ class MainWindow(QMainWindow):
     def creer_carte_stat(self, titre, valeur_initiale, couleur):
         frame = QFrame()
         frame.setObjectName("statCard")
+        accent = {
+            "#2e7d32": "green",
+            "#c62828": "coral",
+            "#1565c0": "blue",
+        }.get(couleur, "teal")
+        frame.setProperty("accent", accent)
         layout = QVBoxLayout(frame)
         layout.setContentsMargins(14, 10, 14, 10)
         lbl_titre = QLabel(titre)
@@ -331,8 +521,122 @@ class MainWindow(QMainWindow):
         self.card_total_impayes.findChild(QLabel, "statValue").setText(f"{total_reste:,.0f} FCFA")
         self.card_total_eleves.findChild(QLabel, "statValue").setText(str(nbr_eleves))
 
+    def creer_graphique_encaissements(self):
+        self.chart_bar = QChart()
+        self.chart_bar.setTitle("Encaissements des 6 derniers mois")
+        self.chart_bar.setTitleFont(QFont("Segoe UI", 12, QFont.Weight.DemiBold))
+        self.chart_bar.setTitleBrush(QColor("#214757"))
+        self.chart_bar.setBackgroundBrush(QColor("#ffffff"))
+        self.chart_bar.setBackgroundRoundness(7)
+        self.chart_bar.setMargins(QMargins(14, 10, 14, 8))
+        self.chart_bar.setPlotAreaBackgroundVisible(True)
+        self.chart_bar.setPlotAreaBackgroundBrush(QColor("#fbfcfd"))
+        self.chart_bar.legend().hide()
+        self.series_bar = QBarSeries()
+        self.bar_set = QBarSet("Montant encaissé")
+        self.bar_set.setColor(QColor("#167d8d"))
+        self.series_bar.append(self.bar_set)
+        self.chart_bar.addSeries(self.series_bar)
+
+        self.axis_mois = QBarCategoryAxis()
+        self.axis_mois.setLabelsFont(QFont("Segoe UI", 9))
+        self.axis_mois.setLabelsColor(QColor("#607382"))
+        self.axis_mois.setGridLineColor(QColor("#e4eaee"))
+        self.axis_mois.setLinePenColor(QColor("#cbd6dc"))
+        self.chart_bar.addAxis(self.axis_mois, Qt.AlignmentFlag.AlignBottom)
+        self.series_bar.attachAxis(self.axis_mois)
+        self.axis_encaissement = QValueAxis()
+        self.axis_encaissement.setLabelFormat("%.0f")
+        self.axis_encaissement.setTitleText("FCFA")
+        self.axis_encaissement.setTitleFont(QFont("Segoe UI", 8))
+        self.axis_encaissement.setLabelsFont(QFont("Segoe UI", 8))
+        self.axis_encaissement.setLabelsColor(QColor("#607382"))
+        self.axis_encaissement.setGridLineColor(QColor("#e4eaee"))
+        self.axis_encaissement.setLinePenColor(QColor("#cbd6dc"))
+        self.axis_encaissement.setMin(0)
+        self.chart_bar.addAxis(self.axis_encaissement, Qt.AlignmentFlag.AlignLeft)
+        self.series_bar.attachAxis(self.axis_encaissement)
+
+        view = QChartView(self.chart_bar)
+        view.setObjectName("monthlyPaymentsChart")
+        view.setRenderHint(QPainter.RenderHint.Antialiasing)
+        view.setMinimumHeight(235)
+        return view
+
+    def creer_graphique_repartition(self):
+        self.chart_pie = QChart()
+        self.chart_pie.setTitle("Situation des frais scolaires")
+        self.chart_pie.setTitleFont(QFont("Segoe UI", 12, QFont.Weight.DemiBold))
+        self.chart_pie.setTitleBrush(QColor("#214757"))
+        self.chart_pie.setBackgroundBrush(QColor("#ffffff"))
+        self.chart_pie.setBackgroundRoundness(7)
+        self.chart_pie.setMargins(QMargins(14, 10, 14, 4))
+        self.chart_pie.legend().setAlignment(Qt.AlignmentFlag.AlignBottom)
+        self.chart_pie.legend().setLabelColor(QColor("#526777"))
+        self.chart_pie.legend().setFont(QFont("Segoe UI", 9))
+        self.series_pie = QPieSeries()
+        self.series_pie.setHoleSize(0.58)
+        self.chart_pie.addSeries(self.series_pie)
+
+        view = QChartView(self.chart_pie)
+        view.setObjectName("tuitionDistributionChart")
+        view.setRenderHint(QPainter.RenderHint.Antialiasing)
+        view.setMinimumHeight(235)
+        return view
+
+    def actualiser_graphiques(self, aujourd_hui=None):
+        aujourd_hui = aujourd_hui or date.today()
+        mois = []
+        noms_mois = ("Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc")
+        index_mois_courant = aujourd_hui.year * 12 + aujourd_hui.month - 1
+        for decalage in reversed(range(6)):
+            index = index_mois_courant - decalage
+            annee, zero_mois = divmod(index, 12)
+            numero_mois = zero_mois + 1
+            mois.append((f"{annee:04d}-{numero_mois:02d}", f"{noms_mois[numero_mois - 1]} {annee % 100:02d}"))
+
+        totaux = PaiementDAO.obtenir_encaissements_mensuels(mois[0][0], mois[-1][0])
+        valeurs = [totaux.get(cle, 0.0) for cle, _ in mois]
+        self.bar_set.remove(0, self.bar_set.count())
+        self.bar_set.append(valeurs)
+        self.axis_mois.clear()
+        self.axis_mois.append([libelle for _, libelle in mois])
+        maximum = max(valeurs, default=0)
+        if maximum <= 0:
+            maximum_axe = 100_000
+        else:
+            maximum_brut = maximum * 1.2
+            magnitude = 10 ** math.floor(math.log10(maximum_brut))
+            maximum_axe = math.ceil(maximum_brut / magnitude) * magnitude
+        self.axis_encaissement.setRange(0, maximum_axe)
+        self.axis_encaissement.setTickCount(5)
+
+        repartition = PaiementDAO.obtenir_repartition_scolarite()
+        self.series_pie.clear()
+        total = repartition["total_du"]
+        if total <= 0:
+            aucune_dette = self.series_pie.append("Aucun frais inscrit", 1)
+            aucune_dette.setColor(QColor("#d7dee8"))
+        else:
+            paye = self.series_pie.append("Payé", repartition["total_paye"])
+            reste = self.series_pie.append("Restant", repartition["reste"])
+            paye.setColor(QColor("#167d8d"))
+            reste.setColor(QColor("#ee7865"))
+            paye.setLabel(f"Payé · {repartition['total_paye']:,.0f} FCFA")
+            reste.setLabel(f"Restant · {repartition['reste']:,.0f} FCFA")
+            paye.setLabelVisible(False)
+            reste.setLabelVisible(False)
+
+    def verifier_mise_a_jour_mois(self, aujourd_hui=None):
+        aujourd_hui = aujourd_hui or date.today()
+        mois_local = aujourd_hui.strftime("%Y-%m")
+        if mois_local != self._mois_graphique:
+            self._mois_graphique = mois_local
+            self.actualiser_graphiques(aujourd_hui)
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    charger_police_systeme(app)
     init_db()
     base_dir = getattr(sys, "_MEIPASS", os.path.dirname(__file__))
     stylesheet_path = os.path.join(base_dir, "style.qss")

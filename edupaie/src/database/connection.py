@@ -47,6 +47,8 @@ def init_db():
                     mode_paiement TEXT NOT NULL CHECK(mode_paiement IN (
                         'Espèces', 'Chèque', 'Virement', 'Mobile Money', 'TMoney', 'Moov Money'
                     )),
+                    total_paye_apres REAL,
+                    reste_apres REAL,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (eleve_id) REFERENCES eleves(id) ON DELETE CASCADE
                 )
@@ -61,6 +63,11 @@ def init_db():
             conn.execute("ALTER TABLE paiements_migration RENAME TO paiements")
             conn.commit()
             conn.execute("PRAGMA foreign_keys = ON")
+        colonnes_paiements = {row[1] for row in conn.execute("PRAGMA table_info(paiements)")}
+        if "total_paye_apres" not in colonnes_paiements:
+            conn.execute("ALTER TABLE paiements ADD COLUMN total_paye_apres REAL")
+        if "reste_apres" not in colonnes_paiements:
+            conn.execute("ALTER TABLE paiements ADD COLUMN reste_apres REAL")
         conn.commit()
         conn.close()
 
