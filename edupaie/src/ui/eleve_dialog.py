@@ -111,7 +111,7 @@ class EleveDialog(QDialog):
     def enregistrer(self):
         nom = self.input_nom.text().strip()
         prenom = self.input_prenom.text().strip()
-        classe = self.input_classe.text().strip()
+        classe = self.input_classe.currentText().strip()
         annee = self.input_annee.text().strip()
         montant = self.input_montant.value()
         matricule = self.input_matricule.text().strip().upper()
