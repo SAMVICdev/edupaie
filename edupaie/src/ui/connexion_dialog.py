@@ -1,4 +1,3 @@
-import os
 import sys
 from pathlib import Path
 
@@ -6,8 +5,8 @@ from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout,
     QLabel, QLineEdit, QPushButton, QMessageBox, QWidget,
 )
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QPixmap, QIcon
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
 
 from src.services.securite_service import SecuriteService
 from src.database.parametres_dao import ParametresDAO
@@ -104,43 +103,25 @@ class ConnexionDialog(QDialog):
         root.setContentsMargins(40, 32, 40, 28)
         root.setSpacing(0)
 
-        # ── Logo ────────────────────────────────────────────────────
+        # ── Logo fixe EduPaie ────────────────────────────────────────
         logo_lbl = QLabel()
         logo_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        logo_charge = False
 
-        # 1) Logo depuis les paramètres de l'école
-        params = ParametresDAO.obtenir_parametres()
-        chemin_logo = params.get("chemin_logo", "")
-        if chemin_logo and os.path.isfile(chemin_logo):
-            px = QPixmap(chemin_logo).scaled(
-                100, 100,
+        # Logo fixe depuis src/assets/logo.png (toujours ce logo, indépendant des paramètres)
+        chemin_logo = Path(__file__).resolve().parent.parent / "assets" / "logo.png"
+        if not chemin_logo.is_file():
+            # Fallback pour exe compilé
+            base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[2]))
+            chemin_logo = base / "src" / "assets" / "logo.png"
+
+        if chemin_logo.is_file():
+            px = QPixmap(str(chemin_logo)).scaled(
+                120, 120,
                 Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.SmoothTransformation
             )
             logo_lbl.setPixmap(px)
-            logo_charge = True
-
-        # 2) Logo depuis src/assets/logo.png
-        if not logo_charge:
-            base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[2]))
-            for candidat in (
-                base / "src" / "assets" / "logo.png",
-                base / "assets" / "logo.png",
-                Path(__file__).resolve().parent / "assets" / "logo.png",
-            ):
-                if candidat.is_file():
-                    px = QPixmap(str(candidat)).scaled(
-                        100, 100,
-                        Qt.AspectRatioMode.KeepAspectRatio,
-                        Qt.TransformationMode.SmoothTransformation
-                    )
-                    logo_lbl.setPixmap(px)
-                    logo_charge = True
-                    break
-
-        # 3) Fallback : initiales stylisées
-        if not logo_charge:
+        else:
             logo_lbl.setText("💼")
             logo_lbl.setStyleSheet("font-size: 64px; color: #4ecdc4;")
 
