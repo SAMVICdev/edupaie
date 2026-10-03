@@ -3,6 +3,15 @@ QMainWindow, QDialog {
     color: #182a3a;
 }
 
+/* Force tous les QWidget dans les dialogs à avoir fond clair */
+QDialog > QWidget,
+QDialog QScrollArea,
+QDialog QScrollArea > QWidget,
+QDialog QScrollArea > QWidget > QWidget {
+    background-color: #f1f5f8;
+    color: #182a3a;
+}
+
 QWidget#centralWidget {
     background-color: #f1f5f8;
 }

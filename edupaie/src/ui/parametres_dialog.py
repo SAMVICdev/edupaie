@@ -26,8 +26,10 @@ class ParametresDialog(QDialog):
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.Shape.NoFrame)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll.setStyleSheet("QScrollArea { background-color: #f1f5f8; border: none; }")
 
         container = QWidget()
+        container.setStyleSheet("background-color: #f1f5f8;")
         container.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         self.form = QFormLayout(container)
         self.form.setContentsMargins(24, 20, 24, 16)
@@ -41,12 +43,12 @@ class ParametresDialog(QDialog):
         # Séparateur
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet("color: #d6e0e5;")
+        sep.setStyleSheet("background-color: #d6e0e5; max-height: 1px; border: none;")
         main_layout.addWidget(sep)
 
         # Boutons fixes en bas — toujours visibles
         btn_bar = QWidget()
-        btn_bar.setStyleSheet("background-color: #f8fafc; padding: 10px 24px;")
+        btn_bar.setStyleSheet("background-color: #edf1f4; border-top: 1px solid #d6e0e5;")
         btn_bar_layout = QHBoxLayout(btn_bar)
         btn_bar_layout.setContentsMargins(24, 10, 24, 10)
         self.btn_enregistrer = QPushButton("Enregistrer les modifications")
@@ -151,9 +153,12 @@ class ParametresDialog(QDialog):
         lbl = QLabel(titre)
         lbl.setStyleSheet(
             "color: #247f83; font-size: 11px; font-weight: 700; "
-            "padding-top: 10px; padding-bottom: 2px;"
+            "padding-top: 12px; padding-bottom: 2px; background: transparent;"
         )
-        self.form.addRow(lbl)
+        # Label vide pour aligner la colonne de gauche
+        vide = QLabel("")
+        vide.setStyleSheet("background: transparent;")
+        self.form.addRow(vide, lbl)
 
     def actualiser_champs_securite(self):
         securite_active = self.checkbox_securite.isChecked()
