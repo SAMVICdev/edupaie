@@ -1,4 +1,5 @@
 import sys
+import os
 from datetime import datetime
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QLabel, QPushButton, QTableWidget, 
@@ -22,13 +23,14 @@ class MainWindow(QMainWindow):
 
         # Widget Central
         self.central_widget = QWidget()
+        self.central_widget.setObjectName("centralWidget")
         self.setCentralWidget(self.central_widget)
         self.main_layout = QVBoxLayout(self.central_widget)
 
         # En-tête
         header_layout = QHBoxLayout()
         self.titre = QLabel("Tableau de Bord & Élèves")
-        self.titre.setStyleSheet("font-size: 20px; font-weight: bold;")
+        self.titre.setObjectName("pageTitle")
         
         self.btn_parametres = QPushButton("⚙️ Paramètres")
         self.btn_parametres.clicked.connect(self.ouvrir_dialog_parametres)
@@ -174,19 +176,13 @@ class MainWindow(QMainWindow):
 
     def creer_carte_stat(self, titre, valeur_initiale, couleur):
         frame = QFrame()
-        frame.setStyleSheet(f"""
-            QFrame {{
-                background-color: #f8f9fa;
-                border-left: 5px solid {couleur};
-                border-radius: 4px;
-                padding: 8px;
-            }}
-        """)
+        frame.setObjectName("statCard")
         layout = QVBoxLayout(frame)
+        layout.setContentsMargins(14, 10, 14, 10)
         lbl_titre = QLabel(titre)
-        lbl_titre.setStyleSheet("color: #555555; font-size: 12px;")
+        lbl_titre.setObjectName("statLabel")
         lbl_valeur = QLabel(valeur_initiale)
-        lbl_valeur.setObjectName("valeur")
+        lbl_valeur.setObjectName("statValue")
         lbl_valeur.setStyleSheet(f"color: {couleur}; font-size: 16px; font-weight: bold;")
 
         layout.addWidget(lbl_titre)
@@ -194,9 +190,9 @@ class MainWindow(QMainWindow):
         return frame
 
     def mettre_a_jour_stats(self, total_encaisse, total_reste, nbr_eleves):
-        self.card_total_encaisse.findChild(QLabel, "valeur").setText(f"{total_encaisse:,.0f} FCFA")
-        self.card_total_impayes.findChild(QLabel, "valeur").setText(f"{total_reste:,.0f} FCFA")
-        self.card_total_eleves.findChild(QLabel, "valeur").setText(str(nbr_eleves))
+        self.card_total_encaisse.findChild(QLabel, "statValue").setText(f"{total_encaisse:,.0f} FCFA")
+        self.card_total_impayes.findChild(QLabel, "statValue").setText(f"{total_reste:,.0f} FCFA")
+        self.card_total_eleves.findChild(QLabel, "statValue").setText(str(nbr_eleves))
 
     def exporter_donnees(self):
         filtre = "CSV (*.csv);;Excel (*.xlsx)"
@@ -217,12 +213,14 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    base_dir = getattr(sys, "_MEIPASS", os.path.dirname(__file__))
+    stylesheet_path = os.path.join(base_dir, "style.qss")
+    if not os.path.exists(stylesheet_path):
+        stylesheet_path = os.path.join(base_dir, "src", "ui", "style.qss")
+    if os.path.exists(stylesheet_path):
+        with open(stylesheet_path, "r", encoding="utf-8") as stylesheet_file:
+            app.setStyleSheet(stylesheet_file.read())
+            
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
