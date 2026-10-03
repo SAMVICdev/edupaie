@@ -30,6 +30,7 @@ from src.ui.parametres_dialog import ParametresDialog
 from src.ui.historique_dialog import HistoriqueDialog
 from src.ui.connexion_dialog import ConnexionDialog
 from src.ui.assistance_dialog import AssistanceDialog
+from src.ui.guide_dialog import GuideDialog
 
 
 def charger_police_systeme(app):
@@ -261,8 +262,11 @@ class MainWindow(QMainWindow):
         self.btn_nav_echeances = self.ajouter_navigation(
             "Échéances scolaires", self.ouvrir_dialog_echeances
         )
-        for bouton in (self.btn_nav_echeances, self.btn_parametres, self.btn_aide):
-            if bouton not in (self.btn_nav_echeances,):
+        self.btn_nav_guide = self.ajouter_navigation(
+            "Guide utilisateur", self.ouvrir_guide
+        )
+        for bouton in (self.btn_nav_echeances, self.btn_nav_guide, self.btn_parametres, self.btn_aide):
+            if bouton not in (self.btn_nav_echeances, self.btn_nav_guide):
                 bouton.setObjectName("sidebarNavButton")
                 bouton.setCheckable(True)
                 self.groupe_navigation.addButton(bouton)
@@ -493,6 +497,9 @@ class MainWindow(QMainWindow):
     def ouvrir_dialog_parametres(self):
         dialog = ParametresDialog(self)
         dialog.exec()
+
+    def ouvrir_guide(self):
+        GuideDialog(self).exec()
 
     def ouvrir_assistance(self):
         AssistanceDialog(self).exec()
