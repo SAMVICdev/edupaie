@@ -17,6 +17,12 @@
 
 [![Documentation complète](https://img.shields.io/badge/📄_Télécharger-Documentation_Complète_EDUPAIE.docx-1a73e8?style=for-the-badge)](docs/EDUPAIE_Documentation_Complete.docx)
 
+### 💻 Télécharger l'application (Windows)
+
+[![Télécharger EDUPAIE v1.0](https://img.shields.io/badge/💾_Télécharger-EduPaie_v1.0_Windows.zip-2ecc71?style=for-the-badge&logo=windows)](https://github.com/SAMVICdev/edupaie/releases/download/v1.0/EduPaie-v1.0-Windows.zip)
+
+> **Aucune installation de Python requise** — extraire le zip et double-cliquer sur `EduPaie.exe`
+
 </div>
 
 ---
