@@ -68,6 +68,26 @@ def init_db():
             conn.execute("ALTER TABLE paiements ADD COLUMN total_paye_apres REAL")
         if "reste_apres" not in colonnes_paiements:
             conn.execute("ALTER TABLE paiements ADD COLUMN reste_apres REAL")
+
+        # Création de la table tarifs_classe si elle n'existe pas
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS tarifs_classe (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                classe TEXT NOT NULL UNIQUE,
+                montant REAL NOT NULL CHECK(montant >= 0)
+            )
+        """)
+
+        # Création de la table echeances si elle n'existe pas
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS echeances (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                annee_scolaire TEXT NOT NULL,
+                classe TEXT NOT NULL,
+                date_echeance DATE NOT NULL,
+                UNIQUE(annee_scolaire, classe)
+            )
+        """)
         conn.commit()
         conn.close()
 

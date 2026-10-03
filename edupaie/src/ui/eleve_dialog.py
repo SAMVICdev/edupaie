@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QPushButton,
 )
 from src.database.eleve_dao import EleveDAO
+from src.database.tarif_dao import TarifDAO
 from src.services.eleve_service import EleveService
 
 class EleveDialog(QDialog):
@@ -61,10 +62,12 @@ class EleveDialog(QDialog):
             lambda: self.verifier_doublon_matricule(self.input_matricule.text())
         )
         self.input_classe.currentTextChanged.connect(self.actualiser_matricule)
+        self.input_classe.currentTextChanged.connect(self.actualiser_tarif_classe)
         self.input_annee.textChanged.connect(self.actualiser_matricule)
 
         if not eleve:
             self.actualiser_matricule()
+            self.actualiser_tarif_classe(self.input_classe.currentText())
         self.input_matricule.setFocus()
         self._lier_entree_au_champ_suivant()
 
@@ -79,6 +82,18 @@ class EleveDialog(QDialog):
         for champ in champs:
             champ.returnPressed.connect(self.focusNextChild)
         self.input_montant.lineEdit().returnPressed.connect(self.btn_valider.click)
+
+    def actualiser_tarif_classe(self, classe):
+        """Pré-remplit le montant selon le tarif défini pour cette classe."""
+        if self.eleve:
+            # En mode modification, ne pas écraser le montant existant
+            return
+        classe = classe.strip()
+        if not classe:
+            return
+        tarif = TarifDAO.obtenir_par_classe(classe)
+        if tarif is not None:
+            self.input_montant.setValue(tarif)
 
     def definir_matricule_manuel(self, _texte):
         self._matricule_manuel = True

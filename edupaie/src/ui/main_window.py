@@ -609,12 +609,24 @@ class MainWindow(QMainWindow):
         self.axis_mois.clear()
         self.axis_mois.append([libelle for _, libelle in mois])
         maximum = max(valeurs, default=0)
-        if maximum <= 0:
-            maximum_axe = 100_000
+        # Lire le max personnalisé depuis les paramètres
+        params = ParametresDAO.obtenir_parametres()
+        y_max_param = params.get("graphique_y_max")
+        if y_max_param:
+            try:
+                maximum_axe = float(y_max_param)
+            except (ValueError, TypeError):
+                maximum_axe = None
         else:
-            maximum_brut = maximum * 1.2
-            magnitude = 10 ** math.floor(math.log10(maximum_brut))
-            maximum_axe = math.ceil(maximum_brut / magnitude) * magnitude
+            maximum_axe = None
+
+        if maximum_axe is None:
+            if maximum <= 0:
+                maximum_axe = 100_000
+            else:
+                maximum_brut = maximum * 1.2
+                magnitude = 10 ** math.floor(math.log10(maximum_brut))
+                maximum_axe = math.ceil(maximum_brut / magnitude) * magnitude
         self.axis_encaissement.setRange(0, maximum_axe)
         self.axis_encaissement.setTickCount(5)
 

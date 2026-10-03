@@ -21,7 +21,7 @@ class ParametresDAO:
             conn.execute(
                 "ALTER TABLE parametres ADD COLUMN annee_scolaire TEXT DEFAULT '2025-2026'"
             )
-        for colonne in ('recovery_salt', 'recovery_hash', 'support_email', 'support_telephone'):
+        for colonne in ('recovery_salt', 'recovery_hash', 'support_email', 'support_telephone', 'graphique_y_max'):
             if colonne not in colonnes:
                 conn.execute(f"ALTER TABLE parametres ADD COLUMN {colonne} TEXT")
         conn.commit()
@@ -34,7 +34,7 @@ class ParametresDAO:
         cursor.execute("""
             SELECT nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature,
                    annee_scolaire, format_matricule,
-                   support_email, support_telephone,
+                   support_email, support_telephone, graphique_y_max,
                    (password_salt IS NOT NULL AND password_hash IS NOT NULL) AS protection_active,
                    (recovery_salt IS NOT NULL AND recovery_hash IS NOT NULL) AS recuperation_active
             FROM parametres WHERE id = 1
@@ -62,22 +62,24 @@ class ParametresDAO:
             "support_telephone": DEFAULT_SUPPORT_TELEPHONE,
             "protection_active": False,
             "recuperation_active": False,
+            "graphique_y_max": None,
         }
 
     @staticmethod
     def sauvegarder_parametres(nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature,
                                annee_scolaire="2025-2026",
                                format_matricule="{annee}-{classe}-{numero:03d}",
-                               support_email="", support_telephone=""):
+                               support_email="", support_telephone="",
+                               graphique_y_max=None):
         conn = get_connection()
         ParametresDAO._assurer_colonnes_securite(conn)
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO parametres (
                 id, nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature,
-                annee_scolaire, format_matricule, support_email, support_telephone
+                annee_scolaire, format_matricule, support_email, support_telephone, graphique_y_max
             )
-            VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 nom_ecole=excluded.nom_ecole,
                 adresse=excluded.adresse,
@@ -88,11 +90,13 @@ class ParametresDAO:
                 annee_scolaire=excluded.annee_scolaire,
                 format_matricule=excluded.format_matricule,
                 support_email=excluded.support_email,
-                support_telephone=excluded.support_telephone
+                support_telephone=excluded.support_telephone,
+                graphique_y_max=excluded.graphique_y_max
         """, (nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature,
               annee_scolaire, format_matricule,
               support_email or DEFAULT_SUPPORT_EMAIL,
-              support_telephone or DEFAULT_SUPPORT_TELEPHONE))
+              support_telephone or DEFAULT_SUPPORT_TELEPHONE,
+              graphique_y_max))
         conn.commit()
         conn.close()
 

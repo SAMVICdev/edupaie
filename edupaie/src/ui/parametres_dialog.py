@@ -96,9 +96,16 @@ class ParametresDialog(QDialog):
         self.form.addRow("Tampon / Logo :", logo_layout)
         self.form.addRow("Signature :", sig_layout)
 
+        # Graphique
+        self._section("GRAPHIQUE TABLEAU DE BORD")
+        self.input_graphique_y_max = QLineEdit(
+            str(int(params.get("graphique_y_max") or "")) if params.get("graphique_y_max") else ""
+        )
+        self.input_graphique_y_max.setPlaceholderText("Automatique (laisser vide)")
+        self.form.addRow("Échelle max axe Y (FCFA) :", self.input_graphique_y_max)
+
         # Scolarité
-        self._section("SCOLARITÉ")
-        self.input_annee_scolaire = QLineEdit(params.get("annee_scolaire", "2025-2026"))
+        self._section("SCOLARITÉ")        self.input_annee_scolaire = QLineEdit(params.get("annee_scolaire", "2025-2026"))
         self.input_annee_scolaire.setPlaceholderText("ex: 2025-2026")
         self.input_format_matricule = QLineEdit(
             params.get("format_matricule", "{annee}-{classe}-{numero:03d}")
@@ -106,9 +113,12 @@ class ParametresDialog(QDialog):
         self.input_format_matricule.setPlaceholderText("{annee}-{classe}-{numero:03d}")
         self.btn_echeances = QPushButton("Gérer les échéances scolaires →")
         self.btn_echeances.clicked.connect(self.ouvrir_echeances)
+        self.btn_tarifs = QPushButton("Gérer les tarifs par classe →")
+        self.btn_tarifs.clicked.connect(self.ouvrir_tarifs)
         self.form.addRow("Année scolaire :", self.input_annee_scolaire)
         self.form.addRow("Format matricule :", self.input_format_matricule)
         self.form.addRow("", self.btn_echeances)
+        self.form.addRow("", self.btn_tarifs)
 
         # Assistance
         self._section("ASSISTANCE EDUPAIE")
@@ -184,6 +194,10 @@ class ParametresDialog(QDialog):
         from src.ui.echeance_dialog import EcheanceDialog
         EcheanceDialog(self).exec()
 
+    def ouvrir_tarifs(self):
+        from src.ui.tarifs_dialog import TarifsDialog
+        TarifsDialog(self).exec()
+
     def enregistrer(self):
         mot_de_passe_actuel = self.input_mot_de_passe_actuel.text()
         nouveau_mot_de_passe = self.input_nouveau_mot_de_passe.text()
@@ -243,6 +257,18 @@ class ParametresDialog(QDialog):
             if confirmation_code.exec() != QDialog.DialogCode.Accepted:
                 return
 
+        # Lire graphique_y_max
+        y_max_str = self.input_graphique_y_max.text().strip()
+        graphique_y_max = None
+        if y_max_str:
+            try:
+                graphique_y_max = float(y_max_str.replace(" ", "").replace(",", "."))
+                if graphique_y_max <= 0:
+                    graphique_y_max = None
+            except ValueError:
+                QMessageBox.warning(self, "Erreur", "L'échelle max du graphique doit être un nombre.")
+                return
+
         ParametresDAO.sauvegarder_parametres(
             self.input_nom.text().strip(),
             self.input_adresse.text().strip(),
@@ -254,6 +280,7 @@ class ParametresDialog(QDialog):
             format_matricule,
             self.input_support_email.text().strip(),
             self.input_support_telephone.text().strip(),
+            graphique_y_max,
         )
 
         if definir_securite:

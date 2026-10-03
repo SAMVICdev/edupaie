@@ -32,6 +32,12 @@ CREATE TABLE IF NOT EXISTS parametres (
     annee_scolaire TEXT NOT NULL DEFAULT '2025-2026'
 );
 
+CREATE TABLE IF NOT EXISTS tarifs_classe (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    classe TEXT NOT NULL UNIQUE,
+    montant REAL NOT NULL CHECK(montant >= 0)
+);
+
 CREATE TABLE IF NOT EXISTS echeances (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     annee_scolaire TEXT NOT NULL,
