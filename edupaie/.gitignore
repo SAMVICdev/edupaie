@@ -1,0 +1,38 @@
+# Cache Python
+__pycache__/
+*.pyc
+
+# Base de données locale
+*.sqlite3
+
+# Dossier des reçus PDF générés
+recus/
+
+# Environnement virtuel
+venv/
+.venv/
+build/
+dist/
+*.spec
+data/*.db
+*.db
+
+edupaie/data/exports/*
+edupaie/data/recu/*
+*.xlsx
+*.csv
+# Python & PyInstaller
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec
+
+# Données & Expositions temporaires
+data/exports/*
+data/recu/*
+recus/
+docs/
+*.db
+*.xlsx
+*.csv
