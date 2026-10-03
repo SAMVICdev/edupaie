@@ -21,6 +21,8 @@ class ParametresDialog(QDialog):
         self.input_support_email.setPlaceholderText("email1@example.com,email2@example.com")
         self.input_support_telephone = QLineEdit(params.get("support_telephone", ""))
         self.input_support_telephone.setPlaceholderText("+228...")
+        self.input_annee_scolaire = QLineEdit(params.get("annee_scolaire", "2025-2026"))
+        self.input_annee_scolaire.setPlaceholderText("ex: 2025-2026")
         self.input_format_matricule = QLineEdit(
             params.get("format_matricule", "{annee}-{classe}-{numero:03d}")
         )
@@ -64,6 +66,7 @@ class ParametresDialog(QDialog):
         self.layout.addRow("Courriel de support :", self.input_support_email)
         self.layout.addRow("Téléphone de support :", self.input_support_telephone)
         self.layout.addRow("Format matricule :", self.input_format_matricule)
+        self.layout.addRow("Année scolaire :", self.input_annee_scolaire)
         self.layout.addRow(self.btn_echeances)
         self.layout.addRow("Tampon / Logo :", logo_layout)
         self.layout.addRow("Signature :", sig_layout)
@@ -169,6 +172,7 @@ class ParametresDialog(QDialog):
             self.input_email.text().strip(),
             self.input_logo.text().strip(),
             self.input_signature.text().strip(),
+            self.input_annee_scolaire.text().strip() or "2025-2026",
             format_matricule,
             self.input_support_email.text().strip(),
             self.input_support_telephone.text().strip()
