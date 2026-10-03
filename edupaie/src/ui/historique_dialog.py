@@ -111,5 +111,8 @@ class HistoriqueDialog(QDialog):
         if fichier_pdf:
             try:
                 PDFService.imprimer_recu(fichier_pdf)
+            except RuntimeError as e:
+                # Fallback ouvert — message informatif, pas une erreur critique
+                QMessageBox.information(self, "Impression", str(e))
             except Exception as e:
                 QMessageBox.critical(self, "Erreur d'impression", f"Impossible d'imprimer le reçu : {str(e)}")

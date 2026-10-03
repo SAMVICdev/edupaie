@@ -177,6 +177,26 @@ class PDFService:
             raise FileNotFoundError(f"Reçu introuvable : {chemin_pdf}")
         chemin_absolu = os.path.abspath(chemin_pdf)
         if sys.platform == "win32":
-            os.startfile(chemin_absolu, "print")
+            # Essai 1 : verbe "print" natif Windows
+            try:
+                os.startfile(chemin_absolu, "print")
+                return
+            except OSError:
+                pass
+            # Essai 2 : ShellExecute via ctypes (plus compatible)
+            try:
+                import ctypes
+                ctypes.windll.shell32.ShellExecuteW(
+                    None, "print", chemin_absolu, None, None, 0
+                )
+                return
+            except Exception:
+                pass
+            # Fallback : ouvrir le PDF pour impression manuelle
+            os.startfile(chemin_absolu)
+            raise RuntimeError(
+                "Impression automatique non disponible sur ce système.\n"
+                "Le reçu a été ouvert — utilisez Ctrl+P pour imprimer."
+            )
         else:
             subprocess.Popen(["lp", chemin_absolu])
