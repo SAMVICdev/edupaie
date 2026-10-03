@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QTableWidget, 
                              QTableWidgetItem, QPushButton, QLabel, QMessageBox, QHeaderView)
 from src.database.paiement_dao import PaiementDAO
+from src.services.eleve_service import EleveService
 from src.services.pdf_service import PDFService
 
 class HistoriqueDialog(QDialog):
@@ -37,29 +38,32 @@ class HistoriqueDialog(QDialog):
             self.table.setItem(row_idx, 2, QTableWidgetItem(f"{p['montant']:,.0f} FCFA"))
             self.table.setItem(row_idx, 3, QTableWidgetItem(str(p.get('mode_paiement', 'Espèces'))))
 
-            btn_pdf = QPushButton("📄 Ouvrir")
-            btn_pdf.clicked.connect(lambda _, pai=p: self.ouvrir_recu(pai))
-            self.table.setCellWidget(row_idx, 4, btn_pdf)
+            btn_ouvrir = QPushButton("Ouvrir PDF")
+            btn_ouvrir.clicked.connect(lambda _, pai=p: self.ouvrir_recu(pai))
+            self.table.setCellWidget(row_idx, 4, btn_ouvrir)
 
-            btn_imprimer = QPushButton("🖨 Imprimer")
+            btn_imprimer = QPushButton("Imprimer")
             btn_imprimer.clicked.connect(lambda _, pai=p: self.imprimer_recu(pai))
             self.table.setCellWidget(row_idx, 5, btn_imprimer)
 
     def generer_recu(self, paiement):
         try:
             num_recu = paiement.get('numero_recu', f"REC-{paiement['id']:04d}")
+            paiement_info = dict(paiement)
+            paiement_info['numero_recu'] = num_recu
+            details = EleveService.obtenir_eleve_par_id(self.eleve['id']) or self.eleve
+            paiement_info['total_du'] = details.get('montant_total_due', 0)
+            if paiement_info.get('total_paye_apres') is None:
+                paiement_info['total_paye_apres'] = details.get('total_paye', paiement['montant'])
+            if paiement_info.get('reste_apres') is None:
+                paiement_info['reste_apres'] = details.get('reste_a_payer', 0)
+            paiement_info['nouveau_reste'] = paiement_info['reste_apres']
+            paiement_info['matricule'] = details.get('matricule', '')
             fichier_pdf = PDFService.generer_recu(
-                paiement={
-                    'numero_recu': num_recu,
-                    'montant': paiement['montant'],
-                    'date_paiement': paiement.get('date_paiement', ''),
-                    'mode_paiement': paiement.get('mode_paiement', 'Espèces')
-                },
-                eleve={
-                    'nom': self.eleve['nom'],
-                    'prenom': self.eleve['prenom'],
-                    'classe': self.eleve['classe']
-                }
+                paiement_info,
+                self.eleve['nom'],
+                self.eleve['prenom'],
+                self.eleve['classe'],
             )
             return fichier_pdf
         except Exception as e:
@@ -79,6 +83,5 @@ class HistoriqueDialog(QDialog):
         if fichier_pdf:
             try:
                 PDFService.imprimer_recu(fichier_pdf)
-                QMessageBox.information(self, "Impression", "Le reçu a été envoyé à l'imprimante.")
             except Exception as e:
                 QMessageBox.critical(self, "Erreur d'impression", f"Impossible d'imprimer le reçu : {str(e)}")

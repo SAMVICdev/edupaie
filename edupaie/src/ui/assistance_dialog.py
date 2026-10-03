@@ -1,5 +1,3 @@
-import sys
-
 from PySide6.QtCore import QUrl, QUrlQuery
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import (
@@ -65,46 +63,20 @@ class AssistanceDialog(QDialog):
         destinataires = ",".join(
             adresse.strip() for adresse in email.replace(";", ",").split(",") if adresse.strip()
         )
-        sujet = "Demande d'assistance EDUPAIE"
-        corps = "Bonjour,\n\nJe rencontre le problème suivant dans EDUPAIE :\n\n"
-        if not self.gestionnaire_courriel_disponible():
-            self.copier(f"À : {destinataires}\nObjet : {sujet}\n\n{corps}")
-            QMessageBox.information(
-                self,
-                "Courriel préparé",
-                "Aucun logiciel de courriel n'est configuré. Le destinataire et le modèle "
-                "du message ont été copiés; ouvrez votre messagerie et collez-les.",
-            )
-            return
-
         url = QUrl(f"mailto:{destinataires}")
         query = QUrlQuery()
-        query.addQueryItem("subject", sujet)
-        query.addQueryItem("body", corps)
+        query.addQueryItem("subject", "Demande d'assistance EDUPAIE")
+        query.addQueryItem(
+            "body",
+            "Bonjour,\n\nJe rencontre le problème suivant dans EDUPAIE :\n\n",
+        )
         url.setQuery(query)
         if not QDesktopServices.openUrl(url):
-            self.copier(f"À : {destinataires}\nObjet : {sujet}\n\n{corps}")
-            QMessageBox.information(
+            QMessageBox.warning(
                 self,
-                "Courriel préparé",
-                "Le lancement de votre messagerie a échoué. Le destinataire et le modèle "
-                "du message ont été copiés dans le presse-papiers.",
+                "Courriel indisponible",
+                "Aucune application de courriel n'est configurée sur cet ordinateur.",
             )
-
-    @staticmethod
-    def gestionnaire_courriel_disponible():
-        if sys.platform != "win32":
-            return True
-        try:
-            import winreg
-
-            with winreg.OpenKey(
-                winreg.HKEY_CLASSES_ROOT, r"mailto\shell\open\command"
-            ) as cle:
-                commande, _ = winreg.QueryValueEx(cle, "")
-            return bool(commande)
-        except (OSError, ImportError):
-            return False
 
     def ouvrir_whatsapp(self, telephone):
         numero = "".join(caractere for caractere in telephone if caractere.isdigit())

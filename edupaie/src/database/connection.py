@@ -13,18 +13,6 @@ def get_connection():
 
 def init_db():
     """Initialise la base de données en exécutant le fichier schema.sql."""
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='parametres'")
-    table_exists = cursor.fetchone() is not None
-    if table_exists:
-        cursor.execute("PRAGMA table_info(parametres)")
-        columns = [row[1] for row in cursor.fetchall()]
-        if 'annee_scolaire' not in columns:
-            cursor.execute("ALTER TABLE parametres ADD COLUMN annee_scolaire TEXT NOT NULL DEFAULT '2025-2026'")
-            conn.commit()
-    conn.close()
-
     if os.path.exists(SCHEMA_PATH):
         with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
             schema_sql = f.read()
@@ -80,16 +68,6 @@ def init_db():
             conn.execute("ALTER TABLE paiements ADD COLUMN total_paye_apres REAL")
         if "reste_apres" not in colonnes_paiements:
             conn.execute("ALTER TABLE paiements ADD COLUMN reste_apres REAL")
-        # Création de la table echeances si elle n'existe pas
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS echeances (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                annee_scolaire TEXT NOT NULL,
-                classe TEXT NOT NULL,
-                date_echeance DATE NOT NULL,
-                UNIQUE(annee_scolaire, classe)
-            )
-        """)
         conn.commit()
         conn.close()
 
