@@ -1,22 +1,29 @@
-# Cache Python
+# Cache & Compilations Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 
-# Base de données locale
-*.sqlite3
-
-# Dossier des reçus PDF générés
-recus/
-
-# Environnement virtuel
+# Environnements virtuels
 venv/
 .venv/
+
+# Builds & Compilations PyInstaller
 build/
 dist/
 *.spec
-data/*.db
-*.db
 
+# Base de données SQLite locale
+*.sqlite3
+*.db
+data/*.db
+data/edupaie.db
+
+# Fichiers générés, Reçus PDF & Exports
+recus/
+recu/
+docs/
+data/exports/*
+data/recu/*
 edupaie/data/exports/*
 edupaie/data/recu/*
 *.xlsx
