@@ -173,30 +173,43 @@ class PDFService:
 
     @staticmethod
     def imprimer_recu(chemin_pdf):
+        """Envoie le PDF à l'imprimante par défaut de l'ordinateur."""
         if not os.path.isfile(chemin_pdf):
             raise FileNotFoundError(f"Reçu introuvable : {chemin_pdf}")
         chemin_absolu = os.path.abspath(chemin_pdf)
+
         if sys.platform == "win32":
-            # Essai 1 : verbe "print" natif Windows
+            # Méthode 1 : win32api — envoie directement au spouleur Windows
             try:
-                os.startfile(chemin_absolu, "print")
-                return
-            except OSError:
-                pass
-            # Essai 2 : ShellExecute via ctypes (plus compatible)
-            try:
-                import ctypes
-                ctypes.windll.shell32.ShellExecuteW(
-                    None, "print", chemin_absolu, None, None, 0
+                import win32api
+                import win32print
+                imprimante = win32print.GetDefaultPrinter()
+                win32api.ShellExecute(
+                    0, "print", chemin_absolu, f'/d:"{imprimante}"', ".", 0
                 )
                 return
+            except ImportError:
+                pass
             except Exception:
                 pass
-            # Fallback : ouvrir le PDF pour impression manuelle
+
+            # Méthode 2 : ShellExecute via ctypes
+            try:
+                import ctypes
+                ret = ctypes.windll.shell32.ShellExecuteW(
+                    None, "print", chemin_absolu, None, None, 0
+                )
+                if ret > 32:
+                    return
+            except Exception:
+                pass
+
+            # Fallback : ouvrir le PDF, demander impression manuelle
             os.startfile(chemin_absolu)
             raise RuntimeError(
-                "Impression automatique non disponible sur ce système.\n"
-                "Le reçu a été ouvert — utilisez Ctrl+P pour imprimer."
+                "Le reçu a été ouvert dans votre lecteur PDF.\n"
+                "Utilisez Ctrl+P pour lancer l'impression."
             )
         else:
+            # Linux / macOS
             subprocess.Popen(["lp", chemin_absolu])
