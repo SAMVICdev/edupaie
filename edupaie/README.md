@@ -32,7 +32,7 @@
 
 </div>
 
-Né le **7 mai 2006** à Lomé, Togo. Étudiant en développement web et mobile à l'**Académie Digitale Numérique (ADN) Golfe 1**, dans le cadre d'une formation certifiée **Simplon.co**. Motivé, curieux et engagé, il combine compétences numériques et techniques pour construire des solutions innovantes.
+Né le **7 mai 2006** à Zafi (YOTO), Togo. Étudiant en développement web et mobile à l'**Académie Digitale Numérique (ADN) Golfe 1**, dans le cadre d'une formation certifiée **Simplon.co**. Motivé, curieux et engagé, il combine compétences numériques et techniques pour construire des solutions innovantes.
 
 EDUPAIE répond à un besoin concret des établissements togolais : suivre la scolarité en FCFA, encaisser par les moyens de paiement utilisés localement (TMoney, Moov Money, espèces) et remettre un reçu fiable à chaque parent.
 
