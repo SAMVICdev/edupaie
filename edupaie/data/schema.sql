@@ -32,6 +32,14 @@ CREATE TABLE IF NOT EXISTS parametres (
     annee_scolaire TEXT NOT NULL DEFAULT '2025-2026'
 );
 
+CREATE TABLE IF NOT EXISTS echeances (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    annee_scolaire TEXT NOT NULL,
+    classe TEXT NOT NULL,
+    date_echeance DATE NOT NULL,
+    UNIQUE(annee_scolaire, classe)
+);
+
 -- Insertion de la configuration par défaut de l'établissement
 INSERT OR IGNORE INTO parametres (id, nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature, annee_scolaire)
 VALUES (1, 'Nom de l''Établissement', 'Adresse de l''école', '+228 00 00 00 00', 'contact@ecole.com', '', '', '2025-2026');
