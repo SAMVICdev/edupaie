@@ -9,7 +9,8 @@ class HistoriqueDialog(QDialog):
         super().__init__(parent)
         self.eleve = eleve
         self.setWindowTitle(f"Historique des paiements - {eleve['nom']} {eleve['prenom']}")
-        self.resize(600, 380)
+        self.resize(720, 400)
+        self.setMinimumWidth(620)
 
         layout = QVBoxLayout(self)
 
@@ -20,9 +21,24 @@ class HistoriqueDialog(QDialog):
         self.table = QTableWidget()
         self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels([
-            "N° Reçu", "Date", "Montant", "Mode", "Ouvrir", "Imprimer"
+            "N° Reçu", "Date", "Montant", "Mode", "Ouvrir PDF", "Imprimer"
         ])
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table.verticalHeader().setVisible(False)
+        self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.table.setShowGrid(False)
+        self.table.setAlternatingRowColors(True)
+        self.table.verticalHeader().setDefaultSectionSize(42)
+
+        # Colonnes texte étirables
+        header = self.table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)          # N° Reçu
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents) # Date
+        header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents) # Montant
+        header.setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents) # Mode
+        header.setSectionResizeMode(4, QHeaderView.ResizeMode.Fixed)            # Ouvrir
+        header.setSectionResizeMode(5, QHeaderView.ResizeMode.Fixed)            # Imprimer
+        self.table.setColumnWidth(4, 100)
+        self.table.setColumnWidth(5, 100)
         layout.addWidget(self.table)
 
         self.charger_historique()
@@ -38,11 +54,23 @@ class HistoriqueDialog(QDialog):
             self.table.setItem(row_idx, 2, QTableWidgetItem(f"{p['montant']:,.0f} FCFA"))
             self.table.setItem(row_idx, 3, QTableWidgetItem(str(p.get('mode_paiement', 'Espèces'))))
 
-            btn_ouvrir = QPushButton("Ouvrir PDF")
+            btn_ouvrir = QPushButton("📄 PDF")
+            btn_ouvrir.setToolTip("Ouvrir le reçu PDF")
+            btn_ouvrir.setStyleSheet(
+                "QPushButton { background-color: #247f83; color: white; border-radius: 4px; "
+                "font-size: 11px; font-weight: 600; padding: 4px 6px; }"
+                "QPushButton:hover { background-color: #19686c; }"
+            )
             btn_ouvrir.clicked.connect(lambda _, pai=p: self.ouvrir_recu(pai))
             self.table.setCellWidget(row_idx, 4, btn_ouvrir)
 
-            btn_imprimer = QPushButton("Imprimer")
+            btn_imprimer = QPushButton("🖨 Impr.")
+            btn_imprimer.setToolTip("Imprimer le reçu")
+            btn_imprimer.setStyleSheet(
+                "QPushButton { background-color: #4a7ab5; color: white; border-radius: 4px; "
+                "font-size: 11px; font-weight: 600; padding: 4px 6px; }"
+                "QPushButton:hover { background-color: #3a6090; }"
+            )
             btn_imprimer.clicked.connect(lambda _, pai=p: self.imprimer_recu(pai))
             self.table.setCellWidget(row_idx, 5, btn_imprimer)
 
