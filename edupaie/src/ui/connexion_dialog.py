@@ -3,7 +3,7 @@ from pathlib import Path
 
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout,
-    QLabel, QLineEdit, QPushButton, QMessageBox, QWidget,
+    QLabel, QLineEdit, QPushButton, QMessageBox,
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
@@ -18,24 +18,24 @@ class ConnexionDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("EDUPAIE — Connexion")
         self.setModal(True)
-        self.setFixedSize(420, 420)
-        self.setWindowFlags(
-            Qt.WindowType.Dialog | Qt.WindowType.WindowCloseButtonHint
-        )
+        self.setFixedSize(420, 460)
+        self.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowCloseButtonHint)
 
-        # Fond sombre global
         self.setStyleSheet("""
             QDialog {
                 background-color: #1a2535;
             }
-            QWidget#loginCard {
-                background-color: #1a2535;
+            QLabel {
+                background: transparent;
+                border: none;
+                color: #8fa8b8;
+                font-size: 13px;
             }
             QLabel#appName {
                 color: #ffffff;
-                font-size: 22px;
+                font-size: 24px;
                 font-weight: 700;
-                letter-spacing: 2px;
+                letter-spacing: 3px;
             }
             QLabel#appSub {
                 color: #8fa8b8;
@@ -50,9 +50,9 @@ class ConnexionDialog(QDialog):
                 color: #e8f0f5;
                 border: none;
                 border-bottom: 2px solid #3a4f62;
-                border-radius: 0px;
-                font-size: 16px;
-                padding: 10px 44px 10px 14px;
+                border-radius: 4px;
+                font-size: 15px;
+                padding: 10px 14px;
                 min-height: 44px;
             }
             QLineEdit#passwordInput:focus {
@@ -63,13 +63,11 @@ class ConnexionDialog(QDialog):
                 border: none;
                 color: #6a8a9a;
                 font-size: 18px;
-                min-width: 36px;
-                max-width: 36px;
+                min-width: 38px;
+                max-width: 38px;
                 padding: 0;
             }
-            QPushButton#toggleBtn:hover {
-                color: #4ecdc4;
-            }
+            QPushButton#toggleBtn:hover { color: #4ecdc4; }
             QPushButton#unlockBtn {
                 background-color: #2ecc71;
                 color: #ffffff;
@@ -77,15 +75,11 @@ class ConnexionDialog(QDialog):
                 border-radius: 8px;
                 font-size: 15px;
                 font-weight: 700;
-                min-height: 46px;
+                min-height: 48px;
                 letter-spacing: 1px;
             }
-            QPushButton#unlockBtn:hover {
-                background-color: #27ae60;
-            }
-            QPushButton#unlockBtn:pressed {
-                background-color: #1e8449;
-            }
+            QPushButton#unlockBtn:hover { background-color: #27ae60; }
+            QPushButton#unlockBtn:pressed { background-color: #1e8449; }
             QPushButton#linkBtn {
                 background: transparent;
                 border: none;
@@ -93,60 +87,63 @@ class ConnexionDialog(QDialog):
                 font-size: 12px;
                 text-decoration: underline;
                 min-height: 28px;
+                padding: 0;
             }
-            QPushButton#linkBtn:hover {
-                color: #85c1e9;
-            }
+            QPushButton#linkBtn:hover { color: #85c1e9; }
+            QPushButton#linkBtn:disabled { color: #3a5068; }
         """)
 
         root = QVBoxLayout(self)
-        root.setContentsMargins(40, 32, 40, 28)
+        root.setContentsMargins(40, 30, 40, 24)
         root.setSpacing(0)
 
-        # ── Logo fixe EduPaie ────────────────────────────────────────
+        # ── Logo fixe ────────────────────────────────────────────────
         logo_lbl = QLabel()
         logo_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        logo_lbl.setStyleSheet("background: transparent; border: none;")
 
-        # Logo fixe depuis src/assets/logo.png (toujours ce logo, indépendant des paramètres)
         chemin_logo = Path(__file__).resolve().parent.parent / "assets" / "logo.png"
         if not chemin_logo.is_file():
-            # Fallback pour exe compilé
             base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[2]))
             chemin_logo = base / "src" / "assets" / "logo.png"
 
         if chemin_logo.is_file():
             px = QPixmap(str(chemin_logo)).scaled(
-                120, 120,
+                130, 130,
                 Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.SmoothTransformation
             )
             logo_lbl.setPixmap(px)
         else:
             logo_lbl.setText("💼")
-            logo_lbl.setStyleSheet("font-size: 64px; color: #4ecdc4;")
+            logo_lbl.setStyleSheet("font-size: 64px; color: #4ecdc4; background: transparent;")
 
         root.addWidget(logo_lbl)
-        root.addSpacing(14)
+        root.addSpacing(12)
 
-        # ── Nom appli ───────────────────────────────────────────────
+        # ── Nom & sous-titre ─────────────────────────────────────────
         nom = QLabel("EDUPAIE")
         nom.setObjectName("appName")
         nom.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        nom.setStyleSheet("background: transparent; border: none; color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: 3px;")
         root.addWidget(nom)
 
         sub = QLabel("Gestion des Paiements Scolaires")
         sub.setObjectName("appSub")
         sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        sub.setStyleSheet("background: transparent; border: none; color: #8fa8b8; font-size: 12px;")
         root.addWidget(sub)
-        root.addSpacing(28)
+        root.addSpacing(24)
 
-        # ── Champ mot de passe avec bouton œil ──────────────────────
+        # ── Hint ─────────────────────────────────────────────────────
         hint = QLabel("Saisissez votre mot de passe")
         hint.setObjectName("hint")
         hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        hint.setStyleSheet("background: transparent; border: none; color: #8fa8b8; font-size: 12px;")
         root.addWidget(hint)
-        root.addSpacing(8)
+        root.addSpacing(6)
 
+        # ── Champ mot de passe + bouton œil ──────────────────────────
         pwd_row = QHBoxLayout()
         pwd_row.setSpacing(0)
         self.input_mot_de_passe = QLineEdit()
@@ -163,22 +160,20 @@ class ConnexionDialog(QDialog):
         pwd_row.addWidget(self.input_mot_de_passe)
         pwd_row.addWidget(self.btn_toggle)
         root.addLayout(pwd_row)
-        root.addSpacing(20)
+        root.addSpacing(18)
 
-        # ── Bouton Déverrouiller ────────────────────────────────────
+        # ── Bouton Déverrouiller ──────────────────────────────────────
         self.btn_connexion = QPushButton("Déverrouiller")
         self.btn_connexion.setObjectName("unlockBtn")
         self.btn_connexion.clicked.connect(self.verifier)
         root.addWidget(self.btn_connexion)
         root.addSpacing(14)
 
-        # ── Liens secondaires ───────────────────────────────────────
+        # ── Liens secondaires ─────────────────────────────────────────
         liens = QHBoxLayout()
         self.btn_oublie = QPushButton("Mot de passe oublié ?")
         self.btn_oublie.setObjectName("linkBtn")
-        self.btn_oublie.setEnabled(
-            ParametresDAO.obtenir_identifiants_recuperation() is not None
-        )
+        self.btn_oublie.setEnabled(ParametresDAO.obtenir_identifiants_recuperation() is not None)
         self.btn_assistance = QPushButton("Aide / assistance")
         self.btn_assistance.setObjectName("linkBtn")
         self.btn_oublie.clicked.connect(self.ouvrir_recuperation)
