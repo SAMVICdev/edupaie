@@ -21,7 +21,7 @@ data/edupaie.db
 # Fichiers générés, Reçus PDF & Exports
 recus/
 recu/
-docs/
+# docs/ — inclus intentionnellement pour la documentation téléchargeable
 data/exports/*
 data/recu/*
 edupaie/data/exports/*

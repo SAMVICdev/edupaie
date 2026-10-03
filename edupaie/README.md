@@ -13,6 +13,10 @@
 
 *Application de bureau pour la gestion complète des paiements scolaires en FCFA*
 
+### 📥 Télécharger la documentation complète
+
+[![Documentation complète](https://img.shields.io/badge/📄_Télécharger-Documentation_Complète_EDUPAIE.docx-1a73e8?style=for-the-badge)](docs/EDUPAIE_Documentation_Complete.docx)
+
 </div>
 
 ---
