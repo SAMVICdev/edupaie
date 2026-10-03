@@ -36,7 +36,7 @@
 ### **AZONOUTSOU Kossi Victoire**
 *« Samuel »* — Étudiant en Développement Web & Mobile
 
-</div>
+</div>-
 
 Né le **7 mai 2006** à Zafi (YOTO), Togo. Étudiant en développement web et mobile à l'**Académie Digitale Numérique (ADN) Golfe 1**, dans le cadre d'une formation certifiée **Simplon.co**. Motivé, curieux et engagé, il combine compétences numériques et techniques pour construire des solutions innovantes.
 
@@ -88,7 +88,7 @@ EDUPAIE répond à un besoin concret des établissements togolais : suivre la sc
    - [6.12 Aide et guide](#612-aide-assistance-et-guide-utilisateur)
 7. [Règles de gestion](#7-règles-de-gestion-et-contrôles)
 8. [Perspectives d'évolution](#8-perspectives-dévolution)
-9. [Description des fichiers](#9-description-des-fichiers)
+9. [Description des fichiers](#9-description-des-fichiers)00000000000000000000
 
 ---
 
