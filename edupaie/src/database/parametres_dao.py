@@ -3,12 +3,10 @@ from src.database.connection import get_connection
 DEFAULT_SUPPORT_EMAIL = "samuelazovic@gmail.com,samvicdev@gmail.com"
 DEFAULT_SUPPORT_TELEPHONE = "+228 97 90 67 11"
 
+
 class ParametresDAO:
 
     @staticmethod
-<<<<<<< HEAD
-    def _assurer_colonne_annee_scolaire():
-=======
     def _assurer_colonnes_securite(conn):
         colonnes = {row['name'] for row in conn.execute("PRAGMA table_info(parametres)")}
         if 'password_salt' not in colonnes:
@@ -19,6 +17,10 @@ class ParametresDAO:
             conn.execute(
                 "ALTER TABLE parametres ADD COLUMN format_matricule TEXT NOT NULL DEFAULT '{annee}-{classe}-{numero:03d}'"
             )
+        if 'annee_scolaire' not in colonnes:
+            conn.execute(
+                "ALTER TABLE parametres ADD COLUMN annee_scolaire TEXT DEFAULT '2025-2026'"
+            )
         for colonne in ('recovery_salt', 'recovery_hash', 'support_email', 'support_telephone'):
             if colonne not in colonnes:
                 conn.execute(f"ALTER TABLE parametres ADD COLUMN {colonne} TEXT")
@@ -26,46 +28,24 @@ class ParametresDAO:
 
     @staticmethod
     def obtenir_parametres():
->>>>>>> test-final
         conn = get_connection()
         ParametresDAO._assurer_colonnes_securite(conn)
         cursor = conn.cursor()
-<<<<<<< HEAD
-        cursor.execute("PRAGMA table_info(parametres)")
-        colonnes = [row[1] for row in cursor.fetchall()]
-        conn.close()
-
-        if 'annee_scolaire' not in colonnes:
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute("ALTER TABLE parametres ADD COLUMN annee_scolaire TEXT DEFAULT '2025-2026'")
-            conn.commit()
-            conn.close()
-
-    @staticmethod
-    def obtenir_parametres():
-        ParametresDAO._assurer_colonne_annee_scolaire()
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature, annee_scolaire FROM parametres WHERE id = 1"
-        )
-=======
         cursor.execute("""
-            SELECT nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature, format_matricule,
+            SELECT nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature,
+                   annee_scolaire, format_matricule,
                    support_email, support_telephone,
                    (password_salt IS NOT NULL AND password_hash IS NOT NULL) AS protection_active,
                    (recovery_salt IS NOT NULL AND recovery_hash IS NOT NULL) AS recuperation_active
             FROM parametres WHERE id = 1
         """)
->>>>>>> test-final
         row = cursor.fetchone()
         conn.close()
         if row:
             parametres = dict(row)
-            if parametres.get("support_email") is None:
+            if not parametres.get("support_email"):
                 parametres["support_email"] = DEFAULT_SUPPORT_EMAIL
-            if parametres.get("support_telephone") is None:
+            if not parametres.get("support_telephone"):
                 parametres["support_telephone"] = DEFAULT_SUPPORT_TELEPHONE
             return parametres
 
@@ -76,39 +56,28 @@ class ParametresDAO:
             "email": "contact@edupaie.com",
             "chemin_logo": "",
             "chemin_signature": "",
-<<<<<<< HEAD
-            "annee_scolaire": "2025-2026"
-        }
-
-    @staticmethod
-    def sauvegarder_parametres(nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature, annee_scolaire='2025-2026'):
-        ParametresDAO._assurer_colonne_annee_scolaire()
-=======
+            "annee_scolaire": "2025-2026",
             "format_matricule": "{annee}-{classe}-{numero:03d}",
             "support_email": DEFAULT_SUPPORT_EMAIL,
             "support_telephone": DEFAULT_SUPPORT_TELEPHONE,
-            "protection_active": False
+            "protection_active": False,
+            "recuperation_active": False,
         }
 
     @staticmethod
     def sauvegarder_parametres(nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature,
+                               annee_scolaire="2025-2026",
                                format_matricule="{annee}-{classe}-{numero:03d}",
                                support_email="", support_telephone=""):
->>>>>>> test-final
         conn = get_connection()
         ParametresDAO._assurer_colonnes_securite(conn)
         cursor = conn.cursor()
         cursor.execute("""
-<<<<<<< HEAD
-            INSERT INTO parametres (id, nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature, annee_scolaire)
-            VALUES (1, ?, ?, ?, ?, ?, ?, ?)
-=======
             INSERT INTO parametres (
                 id, nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature,
-                format_matricule, support_email, support_telephone
+                annee_scolaire, format_matricule, support_email, support_telephone
             )
-            VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?)
->>>>>>> test-final
+            VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 nom_ecole=excluded.nom_ecole,
                 adresse=excluded.adresse,
@@ -116,15 +85,14 @@ class ParametresDAO:
                 email=excluded.email,
                 chemin_logo=excluded.chemin_logo,
                 chemin_signature=excluded.chemin_signature,
-<<<<<<< HEAD
-                annee_scolaire=excluded.annee_scolaire
-        """, (nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature, annee_scolaire))
-=======
+                annee_scolaire=excluded.annee_scolaire,
                 format_matricule=excluded.format_matricule,
                 support_email=excluded.support_email,
                 support_telephone=excluded.support_telephone
         """, (nom_ecole, adresse, telephone, email, chemin_logo, chemin_signature,
-              format_matricule, support_email, support_telephone))
+              annee_scolaire, format_matricule,
+              support_email or DEFAULT_SUPPORT_EMAIL,
+              support_telephone or DEFAULT_SUPPORT_TELEPHONE))
         conn.commit()
         conn.close()
 
@@ -201,6 +169,5 @@ class ParametresDAO:
             "UPDATE parametres SET recovery_salt = ?, recovery_hash = ? WHERE id = 1",
             (salt, recovery_hash),
         )
->>>>>>> test-final
         conn.commit()
         conn.close()
