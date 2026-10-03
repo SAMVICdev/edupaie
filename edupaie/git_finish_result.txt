@@ -1,0 +1,122 @@
+=== Branche actuelle ===
+fonction/12-tarifs-par-classe
+=== Ajout des fichiers ===
+=== Commit ===
+On branch fonction/12-tarifs-par-classe
+Your branch is up to date with 'origin/fonction/12-tarifs-par-classe'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   ../agro/actualite.html
+	modified:   ../agro/apropos.html
+	modified:   ../agro/contact.html
+	modified:   ../agro/index.html
+	modified:   ../agro/produit.html
+	modified:   ../agro/style.css
+	modified:   data/edupaie.db
+	modified:   src/database/__pycache__/connection.cpython-313.pyc
+	modified:   src/services/__pycache__/pdf_service.cpython-313.pyc
+	modified:   src/ui/__pycache__/eleve_dialog.cpython-313.pyc
+	modified:   src/ui/__pycache__/main_window.cpython-313.pyc
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	../AGOL.alg
+	../ALGOVIC12.alg
+	"../ALGOVIC12\303\251.alg"
+	../Antigravity IDE.lnk
+	../Antigravity.lnk
+	../Canva.lnk
+	../Claude Setup.exe
+	../ConnectifyLogs_SAMVICdev.zip
+	../Cursor.lnk
+	../DIL/
+	../Discord.lnk
+	../ESA/
+	../Firefox.exe
+	../Kiro.lnk
+	../Navigateur Opera.lnk
+	../Neat Office.lnk
+	../Open Video Downloader.lnk
+	../OpenCode.lnk
+	../Postman.lnk
+	"../Raoula_js \302\267 Suivi du Cycle & Fertilit\303\251.lnk"
+	../SafetySys/
+	../Samuel - Chrome.lnk
+	../Scor-Set/
+	../TraeWork.lnk
+	../agritogo/
+	../agro/.freebuff/
+	../bid--app/
+	../bootstrap-5.3.8-examples/
+	../bude-exe/
+	../budeexemp - Copie/
+	../budeexemp/
+	../butt.lnk
+	../desktop.ini
+	../doc/
+	../edupaie.zip
+	git_finish.bat
+	git_finish_result.txt
+	git_ops.bat
+	git_result.txt
+	../googlecloudtools.datacloud_telemetry_backup/
+	../jso.zip
+	../jso/
+	../lavagebude/
+	../medigeni_app/
+	../new-bide/
+	../package-lock.json
+	../portofolio/
+	../potovi/
+	../presentbide.html
+	../projet-BTP/
+	../pvainci.zip
+	../pvainci/
+	../raoula_js/
+	../samvic-exemple/
+	../samvic-exemple001/
+	../samvic-exemple111/
+	../togoges_schema_et_donnees.sql
+	../unbutu linux.iso
+	../vainci/
+	"../vic  mise \303\240 jour.zip"
+	"../vic  mise \303\240 jour/"
+
+no changes added to commit (use "git add" and/or "git commit -a")
+=== Push branche ===
+Everything up-to-date
+branch 'fonction/12-tarifs-par-classe' set up to track 'origin/fonction/12-tarifs-par-classe'.
+=== Switch main ===
+Switched to branch 'main'
+M	agro/actualite.html
+M	agro/apropos.html
+M	agro/contact.html
+M	agro/index.html
+M	agro/produit.html
+M	agro/style.css
+M	edupaie/data/edupaie.db
+M	edupaie/src/database/__pycache__/connection.cpython-313.pyc
+M	edupaie/src/services/__pycache__/pdf_service.cpython-313.pyc
+M	edupaie/src/ui/__pycache__/eleve_dialog.cpython-313.pyc
+M	edupaie/src/ui/__pycache__/main_window.cpython-313.pyc
+Your branch is up to date with 'origin/main'.
+=== Merge ===
+Updating 7e5d927..f81f5cc
+Fast-forward (no commit created; -m option ignored)
+ edupaie/data/schema.sql                |   6 ++
+ edupaie/src/database/connection.py     |  20 ++++
+ edupaie/src/database/parametres_dao.py |  18 ++--
+ edupaie/src/database/tarif_dao.py      |  59 ++++++++++++
+ edupaie/src/ui/eleve_dialog.py         |  15 +++
+ edupaie/src/ui/main_window.py          |  22 ++++-
+ edupaie/src/ui/parametres_dialog.py    |  31 ++++++-
+ edupaie/src/ui/tarifs_dialog.py        | 165 +++++++++++++++++++++++++++++++++
+ 8 files changed, 322 insertions(+), 14 deletions(-)
+ create mode 100644 edupaie/src/database/tarif_dao.py
+ create mode 100644 edupaie/src/ui/tarifs_dialog.py
+=== Push main ===
+To https://github.com/SAMVICdev/edupaie.git
+   7e5d927..f81f5cc  main -> main
+=== FIN ===

@@ -1,0 +1,97 @@
+=== BRANCH ===
+  fonction/01-base-de-donnees
+  fonction/02-couche-service
+  fonction/03-interface-ui
+  fonction/04-dialogue-paiement
+  fonction/05-generation-pdf
+  fonction/05-recherche-filtres
+  fonction/06-parametres-ecole
+  fonction/06-parametres-etablissement
+  fonction/07-export-rapports
+  fonction/07-historique-et-stats
+  fonction/08-pdf-et-impression
+  fonction/09-ui-design-pro
+  fonction/10-securite-mot-de-passe
+  fonction/11-graphiques-dashboard
+* fonction/12-tarifs-par-classe
+  main
+  test-final
+=== STATUS ===
+ M ../agro/actualite.html
+ M ../agro/apropos.html
+ M ../agro/contact.html
+ M ../agro/index.html
+ M ../agro/produit.html
+ M ../agro/style.css
+ M data/edupaie.db
+ M src/database/__pycache__/connection.cpython-313.pyc
+ M src/services/__pycache__/pdf_service.cpython-313.pyc
+ M src/ui/__pycache__/eleve_dialog.cpython-313.pyc
+ M src/ui/__pycache__/main_window.cpython-313.pyc
+?? ../AGOL.alg
+?? ../ALGOVIC12.alg
+?? "../ALGOVIC12\303\251.alg"
+?? "../Antigravity IDE.lnk"
+?? ../Antigravity.lnk
+?? ../Canva.lnk
+?? "../Claude Setup.exe"
+?? ../ConnectifyLogs_SAMVICdev.zip
+?? ../Cursor.lnk
+?? ../DIL/
+?? ../Discord.lnk
+?? ../ESA/
+?? ../Firefox.exe
+?? ../Kiro.lnk
+?? "../Navigateur Opera.lnk"
+?? "../Neat Office.lnk"
+?? "../Open Video Downloader.lnk"
+?? ../OpenCode.lnk
+?? ../Postman.lnk
+?? "../Raoula_js \302\267 Suivi du Cycle & Fertilit\303\251.lnk"
+?? ../SafetySys/
+?? "../Samuel - Chrome.lnk"
+?? ../Scor-Set/
+?? ../TraeWork.lnk
+?? ../agritogo/
+?? ../agro/.freebuff/
+?? ../bid--app/
+?? ../bootstrap-5.3.8-examples/
+?? ../bude-exe/
+?? "../budeexemp - Copie/"
+?? ../budeexemp/
+?? ../butt.lnk
+?? ../desktop.ini
+?? ../doc/
+?? ../edupaie.zip
+?? git_ops.bat
+?? git_result.txt
+?? ../googlecloudtools.datacloud_telemetry_backup/
+?? ../jso.zip
+?? ../jso/
+?? ../lavagebude/
+?? ../medigeni_app/
+?? ../new-bide/
+?? ../package-lock.json
+?? ../portofolio/
+?? ../potovi/
+?? ../presentbide.html
+?? ../projet-BTP/
+?? ../pvainci.zip
+?? ../pvainci/
+?? ../raoula_js/
+?? ../samvic-exemple/
+?? ../samvic-exemple001/
+?? ../samvic-exemple111/
+?? ../togoges_schema_et_donnees.sql
+?? "../unbutu linux.iso"
+?? ../vainci/
+?? "../vic  mise \303\240 jour.zip"
+?? "../vic  mise \303\240 jour/"
+=== LOG ===
+f81f5cc feat: tarifs par classe - table BDD, DAO, dialog, auto-remplissage formulaire, axe Y configurable
+7e5d927 fix: impression directe via win32print vers imprimante par defaut Windows
+98965dd fix: impression PDF robuste sur Windows - fallback ShellExecute et ouverture manuelle
+d955d13 fix: boutons PDF et Imprimer visibles et responsifs dans historique paiements
+a412236 fix: suppression rectangles blancs sur ecran connexion, labels transparents
+1e0ae37 feat: logo CFA fixe sur ecran de connexion
+=== DONE ===
