@@ -152,6 +152,7 @@ QTableWidget {
     border: 1px solid #d6e0e5;
     border-radius: 7px;
     background-color: #ffffff;
+    color: #182a3a;
     alternate-background-color: #f7f9fa;
     selection-background-color: #dceceb;
     selection-color: #173b4a;
@@ -160,6 +161,7 @@ QTableWidget {
 QTableWidget::item {
     padding: 7px 8px;
     border-bottom: 1px solid #edf1f3;
+    color: #182a3a;
 }
 
 QTableWidget::item:selected {
