@@ -105,7 +105,8 @@ class ParametresDialog(QDialog):
         self.form.addRow("Échelle max axe Y (FCFA) :", self.input_graphique_y_max)
 
         # Scolarité
-        self._section("SCOLARITÉ")        self.input_annee_scolaire = QLineEdit(params.get("annee_scolaire", "2025-2026"))
+        self._section("SCOLARITÉ")
+        self.input_annee_scolaire = QLineEdit(params.get("annee_scolaire", "2025-2026"))
         self.input_annee_scolaire.setPlaceholderText("ex: 2025-2026")
         self.input_format_matricule = QLineEdit(
             params.get("format_matricule", "{annee}-{classe}-{numero:03d}")
