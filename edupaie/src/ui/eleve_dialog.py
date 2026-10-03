@@ -126,10 +126,40 @@ class EleveDialog(QDialog):
     def enregistrer(self):
         nom = self.input_nom.text().strip()
         prenom = self.input_prenom.text().strip()
-        classe = self.input_classe.text().strip()
+        classe = self.input_classe.currentText().strip()
         annee = self.input_annee.text().strip()
         montant = self.input_montant.value()
         matricule = self.input_matricule.text().strip().upper()
+
+        # Validations de base avant d'appeler le service
+        if not nom:
+            QMessageBox.warning(self, "Erreur", "Le nom est obligatoire.")
+            self.input_nom.setFocus()
+            return
+        if not prenom:
+            QMessageBox.warning(self, "Erreur", "Le prénom est obligatoire.")
+            self.input_prenom.setFocus()
+            return
+        if not classe:
+            QMessageBox.warning(self, "Erreur", "La classe est obligatoire.")
+            self.input_classe.setFocus()
+            return
+        if not annee:
+            QMessageBox.warning(self, "Erreur", "L'année scolaire est obligatoire.")
+            self.input_annee.setFocus()
+            return
+        if not matricule:
+            QMessageBox.warning(self, "Erreur", "Le matricule est obligatoire.")
+            self.input_matricule.setFocus()
+            return
+
+        # Vérifier doublon matricule
+        eleve_id = self.eleve.get("id") if self.eleve else None
+        if EleveDAO.matricule_existe(matricule, eleve_id):
+            QMessageBox.warning(self, "Matricule existant",
+                f"Le matricule « {matricule} » est déjà utilisé par un autre élève.")
+            self.input_matricule.setFocus()
+            return
 
         try:
             if self.eleve:
@@ -144,3 +174,5 @@ class EleveDialog(QDialog):
             self.accept()
         except ValueError as e:
             QMessageBox.warning(self, "Erreur de Saisie", str(e))
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur inattendue", str(e))
