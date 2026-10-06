@@ -385,13 +385,13 @@ class MainWindow(QMainWindow):
             self,
             "Exporter les données",
             "Rapport à exporter :",
-            ["Liste des élèves", "Historique des paiements"],
+            ["Liste des élèves (filtre actif)", "Historique des paiements"],
             0,
             False,
         )
         if not valide:
             return
-        nom = "eleves" if choix == "Liste des élèves" else "historique_paiements"
+        nom = "eleves" if "élèves" in choix else "historique_paiements"
         chemin, _ = QFileDialog.getSaveFileName(
             self,
             "Exporter les données",
@@ -401,13 +401,21 @@ class MainWindow(QMainWindow):
         if not chemin:
             return
         try:
-            if choix == "Liste des élèves":
-                resultat = ImportExportService.exporter_eleves(
-                    EleveService.obtenir_tous_les_eleves(), chemin
+            if "élèves" in choix:
+                # Exporter uniquement les élèves visibles selon les filtres actifs
+                recherche = self.search_input.text()
+                classe = self.combo_classe.currentText()
+                statut = self.combo_statut.currentText()
+                eleves_filtres = EleveService.filtrer_eleves(recherche, classe, statut)
+                resultat = ImportExportService.exporter_eleves(eleves_filtres, chemin)
+                nb = len(eleves_filtres)
+                QMessageBox.information(
+                    self, "Export terminé",
+                    f"{nb} élève(s) exporté(s) avec les filtres actifs.\n\nFichier : {resultat}"
                 )
             else:
                 resultat = ImportExportService.exporter_historique(chemin)
-            QMessageBox.information(self, "Export terminé", f"Fichier créé :\n{resultat}")
+                QMessageBox.information(self, "Export terminé", f"Fichier créé :\n{resultat}")
         except Exception as exc:
             QMessageBox.critical(self, "Erreur d'export", str(exc))
 
