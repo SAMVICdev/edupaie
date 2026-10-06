@@ -402,16 +402,35 @@ class MainWindow(QMainWindow):
             return
         try:
             if "élèves" in choix:
-                # Exporter uniquement les élèves visibles selon les filtres actifs
+                # Récupérer les filtres actifs exactement comme charger_eleves()
                 recherche = self.search_input.text()
                 classe = self.combo_classe.currentText()
                 statut = self.combo_statut.currentText()
+
+                # Normaliser — exactement comme dans charger_eleves
+                if classe == "Toutes les classes":
+                    classe = ""
+                if statut == "Tous":
+                    statut = "Tous"
+
                 eleves_filtres = EleveService.filtrer_eleves(recherche, classe, statut)
+
+                # Construire le résumé des filtres pour le message
+                filtres_actifs = []
+                if recherche:
+                    filtres_actifs.append(f"Recherche : « {recherche} »")
+                if classe:
+                    filtres_actifs.append(f"Classe : {classe}")
+                if statut != "Tous":
+                    filtres_actifs.append(f"Statut : {statut}")
+                resume_filtres = " | ".join(filtres_actifs) if filtres_actifs else "Aucun filtre (tous les élèves)"
+
                 resultat = ImportExportService.exporter_eleves(eleves_filtres, chemin)
-                nb = len(eleves_filtres)
                 QMessageBox.information(
                     self, "Export terminé",
-                    f"{nb} élève(s) exporté(s) avec les filtres actifs.\n\nFichier : {resultat}"
+                    f"{len(eleves_filtres)} élève(s) exporté(s)\n"
+                    f"Filtres : {resume_filtres}\n\n"
+                    f"Fichier : {resultat}"
                 )
             else:
                 resultat = ImportExportService.exporter_historique(chemin)
